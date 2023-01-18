@@ -3,7 +3,7 @@
 
 void print_pyramid(int pyramidSize) {
   int i, k, nBlanks, nStars;
-  printf("In print_pyramid: value of G is %d\n", G);
+  printf("In print_pyramid: value of G is %d\n",  G);
   for(i = 0; i < pyramidSize; i++) {
     /* Blank space */
     nBlanks = pyramidSize - i;

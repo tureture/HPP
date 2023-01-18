@@ -1,3 +1,3 @@
-#define G 77
+#define G 144
 
 void print_pyramid(int pyramidSize);
