@@ -21,4 +21,5 @@ main.o: main.h main.c readData.h sort.h
 	$(CC) $(CFLAGS) -c main.c
 
 clean:
-	$(RM) $(SORT) $(OBJS)
+	$(RM) $(SORT) $(OBJS) 
+	rm -r *.dSYM
