@@ -50,10 +50,13 @@ int main(int argc, char const *argv[])
    }
 
   // ALLOCATE MEMORY FOR A 2D ARRAY field WITH SIZE (n, m)
-  int **field;
-   /*
-       YOUR CODE
-  */
+  int **field = (int **)malloc(n * sizeof(int *));
+
+  field = (int **)malloc(n * sizeof(int *));
+  for (int i = 0; i<n; i++){
+      field[i] = (int *)malloc(m* sizeof(int));
+  }
+
 
 
    fill_field(field, n, m, k);
@@ -94,9 +97,12 @@ int main(int argc, char const *argv[])
    }
 
    // FREE MEMORY ALLLOCATED FOR A 2D ARRAY field WITH SIZE (n, m)
-    /*
-        YOUR CODE
-   */
+   // free(field);
+   
+   for(int i = 0; i<n; i++){
+      free(field[i]);
+   }
+   free(field);
 
    return 0;
 }
