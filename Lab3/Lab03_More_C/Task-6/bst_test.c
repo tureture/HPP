@@ -42,12 +42,35 @@ void print_bst(node_t *node)
 
 void delete_tree(node_t **node)
 {
-  printf("ERROR: Function delete_tree is not implemented\n");
+  if (*node == NULL) {return;}
+  else {
+      delete_tree(&(*node)->left);
+      delete_tree(&(*node)->right);
+      free((*node)->name);
+      free(*node);
+      *node = NULL;
+  }
+  
 }
 
 void insert(node_t **node, int ID, char *name)
 {
-  printf("ERROR: Function insert is not implemented\n");
+   char * str;
+   str = strdup(name);
+
+   node_t new_node = {ID, str, NULL, NULL};
+
+   if (*node == NULL) {
+      *node = malloc(sizeof(node_t));
+      **node = new_node;
+      return;
+   } else {
+      if (ID < (*node)->ID) {
+         insert(&(*node)->left, ID, name);
+      } else {
+         insert(&(*node)->right, ID, name);
+      }
+   }
 }
 
 
