@@ -15,7 +15,8 @@ void merge(int arr[], int l, int m, int r)
    int n2 = r - m;
 
    /* create temp arrays */
-   int L[n1], R[n2];
+   int *L = (int *)malloc(sizeof(int)*n1);
+   int *R = (int *)malloc(sizeof(int)*n2);
 
    /* Copy data to temp arrays L[] and R[] */
    for (i = 0; i < n1; i++)
@@ -55,6 +56,8 @@ void merge(int arr[], int l, int m, int r)
       k++;
    }
 
+   free(L);
+
    /* Copy the remaining elements of R[], if there
     * are any */
    while (j < n2)
@@ -63,6 +66,10 @@ void merge(int arr[], int l, int m, int r)
       j++;
       k++;
    }
+
+   free(R);
+
+
 }
 
 
@@ -111,8 +118,10 @@ int main(int argc, char const *argv[])
    printf("Array is created.\n");
 
    mergeSort(a, 0, n - 1);
+   free(a);
 
    printf("Array is sorted!\n");
+
 
    return 0;
 }
