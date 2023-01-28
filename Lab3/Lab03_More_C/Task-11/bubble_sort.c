@@ -85,3 +85,6 @@ int main(int argc, char const *argv[])
 
    return 0;
 }
+
+// time complexity O(n^2)
+// space complexity O(1), in-place sorting
