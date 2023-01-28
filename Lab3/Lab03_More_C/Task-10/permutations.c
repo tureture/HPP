@@ -58,3 +58,6 @@ int main(int argc, char const *argv[])
    printf("In total %ld permutations\n", count);
    return 0;
 }
+
+// O(n * n!) time complexity?
+// O(n) space complexity?
