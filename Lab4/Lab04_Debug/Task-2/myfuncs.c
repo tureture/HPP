@@ -10,6 +10,9 @@ float fun1(float* p, int k) {
   sum = 0;
   for(i = 0; i < k; i++)
     sum += tmp[i];
+
+  tmp[k] = 0.2; // Added intentional segfault bug
+  
   free(tmp);
   return sum;
 }
