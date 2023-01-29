@@ -9,7 +9,7 @@ int gg(int a) {
   int r = p + a;
   r += q;
   char c;
-  for(c = 0; c<200; c++) {
+  for(c = 0; c<200; c++) { // c is a char so it is an infinite loop
     r += 5;
     if(r == q)
       r--;
