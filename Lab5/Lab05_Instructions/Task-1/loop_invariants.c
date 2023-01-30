@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define FAST 0
+#define FAST 1
 
 int main(int argc, char **argv)
 {
@@ -42,3 +42,14 @@ int main(int argc, char **argv)
 
   return 0;
 }
+
+
+// With no compiler flags it took around 0.68 and 0.65s for slow/fast respectively
+// User time was 0.63 and 0.59
+
+// Compiler flag -O3 gets the fast one down to
+// 0.18 real         0.12 user         0.06 sys
+
+// And the slow one to
+// 0.19 real         0.12 user         0.06 sys
+// Basically no difference? I guess the compiler is smart enough to optimize the slow one?

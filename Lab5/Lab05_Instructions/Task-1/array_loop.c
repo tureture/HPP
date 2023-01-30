@@ -52,3 +52,11 @@ int main(int argc, char** argv)
 
    return 0;
 }
+
+/*
+Slow with -O3: 0.01 real         0.01 user         0.00 sys
+Fast with -O3: 0.02 real         0.01 user         0.00 sys
+
+Fast with no compiler flags: 0.60 real         0.60 user         0.00 sys
+Slow with no compiler flags: 0.72 real         0.71 user         0.00 sys
+*/
