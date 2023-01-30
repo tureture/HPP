@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     {
        i = foo(j,size);
 #if FAST
-       if (0 /*put faster array bounds checking here*/) 
+       if ((unsigned int)i >= size) 
        {
           printf("Error: Index out of range");
        }
@@ -39,3 +39,8 @@ int foo(int j, int size)
 {
 	return j%size;
 }
+
+// I got almost no performance difference at almost 0.05 real  0.05 user 0.00 sys every time?
+// I expected some difference? Perhaps compiler does it?
+
+// When using no compiler directives i get 0.24s vs 0.26s after/before.

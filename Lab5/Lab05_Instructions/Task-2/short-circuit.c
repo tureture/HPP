@@ -28,15 +28,24 @@ int main(int argc, char **argv)
    {
       foo = 0;
       /* improve the following if-statements with boolean short-circuits. */
-      if(isMostlyFalse() || isMostlyTrue())
+      if(isMostlyTrue() || isMostlyFalse())
          foo += 1;
       
-      if(isMostlyTrue() && isMostlyFalse())
+      if(isMostlyFalse() && isMostlyTrue())
          foo += 2;
 
-      if( (isFiftyFifty()&&isMostlyFalse()) || (isFiftyFifty()&&isMostlyTrue()) )
+      if( (isFiftyFifty()&&isMostlyTrue()) || (isMostlyFalse() && isFiftyFifty()))
          foo += 4;                
    }
    printf("foo = %d\n", foo);
    return 0;
 }
+
+/*
+Before switching order 
+With -O3: 0.15 real         0.15 user         0.00 sys
+
+After switching order:
+With -O3: 0.11 real         0.10 user         0.00 sys
+
+*/
