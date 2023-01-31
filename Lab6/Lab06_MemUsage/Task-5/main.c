@@ -14,7 +14,7 @@ static double get_wall_seconds() {
 
 int main (int argc, char**args) {
   double time1;
-  const int N = 5000;
+  const int N = 5000 * 4;
   const int nJobs = 1;
 
   double* A     = (double*)malloc(N*N*sizeof(double));
@@ -59,4 +59,28 @@ int main (int argc, char**args) {
 
   return 0;
 }
+
+/*
+Block size 100;
+do_transpose_mod_standard 1 times for N=10000 took   0.204 wall seconds.
+do_transpose_mod_optimized 1 times for N=10000 took   0.154 wall seconds.
+
+do_transpose_mod_standard 1 times for N=5000 took   0.053 wall seconds.
+do_transpose_mod_optimized 1 times for N=5000 took   0.039 wall seconds.
+
+do_transpose_mod_standard 1 times for N=20000 took   1.320 wall seconds.
+do_transpose_mod_optimized 1 times for N=20000 took   0.684 wall seconds.
+
+Block size 1000;
+do_transpose_mod_standard 1 times for N=20000 took   1.378 wall seconds.
+do_transpose_mod_optimized 1 times for N=20000 took   0.703 wall seconds.
+
+Block size 8
+do_transpose_mod_standard 1 times for N=20000 took   0.862 wall seconds.
+do_transpose_mod_optimized 1 times for N=20000 took   0.841 wall seconds.
+
+Too small and it makes no difference
+Block size 100 seems good.
+
+*/
 
