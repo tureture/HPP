@@ -15,7 +15,7 @@ static double get_wall_seconds() {
 int main (int argc, char**args) {
 
   // Prepare input and output buffers for tests
-  const int N1 = 10000;
+  const int N1 = 20*1000;
   float* srcdata  = (float*)malloc(N1*sizeof(float));
   float* dstdata1 = (float*)malloc(N1*sizeof(float));
   float* dstdata2 = (float*)malloc(N1*sizeof(float));
@@ -69,3 +69,34 @@ int main (int argc, char**args) {
   return 0;
 }
 
+/*
+Before restrict:
+transform_std tests took   0.061 wall seconds.
+transform_opt tests took   0.059 wall seconds.
+
+Restric and N largre:
+transform_std tests took   0.059 wall seconds.
+transform_opt tests took   0.059 wall seconds.
+
+with __restrict and N1 =  20 and N2 = 80000 * 1000:
+transform_std tests took   0.328 wall seconds.
+transform_opt tests took   0.298 wall seconds.
+
+with __restrict and N1 =  20 * 1000 and N2 = 80000:
+transform_std tests took   0.118 wall seconds.
+transform_opt tests took   0.123 wall seconds.
+
+With restrict and N1 = 20 
+transform_std tests took   0.323 wall seconds.
+transform_opt tests took   0.299 wall seconds.
+
+No restrict and N1 = 20
+transform_std tests took   0.329 wall seconds.
+transform_opt tests took   0.331 wall seconds.
+very small but noticable difference? idk
+
+No restrict and N1 = 20 * 1000
+transform_std tests took   0.119 wall seconds.
+transform_opt tests took   0.122 wall seconds.
+
+*/
