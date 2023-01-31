@@ -63,5 +63,38 @@ int main (int argc, char**args) {
   free(dstdata2);
 
   return 0;
+
+
 }
+
+/*
+Before any changes 
+transform_std tests took   0.171 wall seconds.
+transform_opt tests took   0.140 wall seconds.
+
+after restrict:
+transform_std tests took   0.181 wall seconds.
+transform_opt tests took   0.215 wall seconds.
+
+after using int NP
+transform_std tests took   0.185 wall seconds.
+transform_opt tests took   0.215 wall seconds.
+
+after using const int NP 
+transform_std tests took   0.181 wall seconds.
+transform_opt tests took   0.022 wall seconds.
+
+using const int NP inside func
+transform_std tests took   0.173 wall seconds.
+transform_opt tests took   0.022 wall seconds.
+
+using int NP inside func
+transform_std tests took   0.182 wall seconds.
+transform_opt tests took   0.022 wall seconds.
+
+no difference since it can check if it will be changed inside func,
+so it knows its a constant.
+
+*/
+
 
