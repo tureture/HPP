@@ -16,7 +16,6 @@ int main() {
     char c;
     float f;
 
-    
     file = fopen("little_bin_file", "r"); // open file 
 
     // read stuff
