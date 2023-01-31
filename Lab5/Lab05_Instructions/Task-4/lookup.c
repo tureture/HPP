@@ -3,7 +3,7 @@
 
 /* From A. Fog: Example 14.1a. */
 
-#define FAST 0
+#define FAST 1
 
 #if FAST
 int factorial (int n)
@@ -36,4 +36,13 @@ int main(int argc, char ** argv)
   printf("myFact = %d\n",myFact);
   return 0;
 }
+
+/*
+Without lookup table: around  0.364s
+With lookup table: 0.135 total
+About twice as fast.
+
+Useful if i want to calculate the same stuff multiple times for few
+different inputs. Not sure exactly what functions those are?
+*/
 

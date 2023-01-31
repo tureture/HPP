@@ -4,7 +4,7 @@
 
 /* From A. Fog: Example 7.33. */
 
-#define FAST 0
+#define FAST 1
 
 int main(int argc, char** argv)
 {
@@ -36,3 +36,10 @@ int main(int argc, char** argv)
    printf("diffFound = %d\n", diffFound);
    return 0;
 }
+
+/*
+Copy with for loop takes around 0.19s
+Copy with memset and memmove takes around 0.026s
+Significantly faster. 
+*/
+
