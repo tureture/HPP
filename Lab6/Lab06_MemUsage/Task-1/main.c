@@ -95,4 +95,28 @@ Gets segfault when N = 10000000
 Makes sense since it is around 5 times larger than stack with int size 4 bytes
 means that it should work with N/10 and it does.
 
+
+Using bubblesort for small lists:
+n = 10
+N = 10000000
+Before sort: the number 7 occurs 10027 times in the list.
+Sorting list with length 10000000 took   0.500 wall seconds.
+
+n = 4
+N = 10000000
+Before sort: the number 7 occurs 10027 times in the list.
+Sorting list with length 10000000 took   0.568 wall seconds.
+
+n = 100
+N = 10000000
+Before sort: the number 7 occurs 10027 times in the list.
+Sorting list with length 10000000 took   1.054 wall seconds.
+
+n = 20
+N = 10000000
+Before sort: the number 7 occurs 10027 times in the list.
+Sorting list with length 10000000 took   0.601 wall seconds.
+
+around n=10 seems to be best for me. 
+
 */
