@@ -72,3 +72,44 @@ int main() {
   free(arrOfStructs);
   return 0;
 }
+
+/*
+With no changes:
+ModifyLow: 0.13s user 0.00s system 98% cpu 0.140 total
+Step8: 0.24s user 0.00s system 99% cpu 0.243 total
+
+With n / 2
+ModifyLow: 0.13s user 0.00s system 98% cpu 0.138 total
+Step8: 0.23s user 0.00s system 98% cpu 0.237 total
+
+With n / 8
+ModifyLow: 0.13s user 0.00s system 98% cpu 0.132 total
+Step8: 0.23s user 0.00s system 99% cpu 0.240 total
+
+With n/20, (n=10)
+ModifyLow: 0.06s user 0.00s system 97% cpu 0.066 total, why is modifylow so much faster?
+Step8: 0.23s user 0.00s system 99% cpu 0.238 total
+
+With n/40, 2560 bytes
+Modifylow: 0.08s user 0.00s system 97% cpu 0.079 total
+Step8: 0.07s user 0.00s system 97% cpu 0.070 total, now step8 
+
+With n*2
+Step8: 0.60s user 0.00s system 99% cpu 0.603 total
+
+With n*10
+ModifyLow: 0.18s user 0.00s system 98% cpu 0.186 total
+Step8: 0.59s user 0.01s system 99% cpu 0.601 total
+
+With n=1
+ModifyLow: 0.00s user 0.00s system 61% cpu 0.005 total
+Step8: 0.00s user 0.00s system 58% cpu 0.005 total
+
+Google says M2 chip has either 196+128 KB per core or 128+64 KB per core
+for performance and efficency cores respectively. 
+
+Biggest change seems to be between n*2 and n for Step8, should correspond
+to change from around 102kb to 204kb 
+
+
+*/
