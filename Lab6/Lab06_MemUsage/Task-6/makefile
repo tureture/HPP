@@ -1,5 +1,5 @@
-CC = gcc
-LD = gcc
+CC = gcc-12
+LD = gcc-12
 CFLAGS = -O3 -Wall -Werror
 LDFLAGS = 
 RM = /bin/rm -f
@@ -14,7 +14,7 @@ $(EXECUTABLE): $(OBJS)
 func.o: func.h func.c
 	$(CC) $(CFLAGS) -c func.c	
 
-main.o: main.c func.h
+main.o: main.c func.h 
 	$(CC) $(CFLAGS) -c main.c 
 
 clean:
