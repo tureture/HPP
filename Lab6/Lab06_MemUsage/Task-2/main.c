@@ -62,3 +62,28 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
+
+/*
+int:
+N = 10000000
+Before sort: the number 7 occurs 99684 times in the list.
+Sorting list with length 10000000 took   0.764 wall seconds.
+
+long int:
+N = 10000000
+Before sort: the number 7 occurs 99684 times in the list.
+Sorting list with length 10000000 took   0.794 wall seconds.
+
+short int:
+N = 10000000
+Before sort: the number 7 occurs 99684 times in the list.
+Sorting list with length 10000000 took   0.776 wall seconds.
+
+char:
+N = 10000000
+Before sort: the number 7 occurs 99684 times in the list.
+Sorting list with length 10000000 took   0.750 wall seconds.
+
+char is best, fewest bytes. But not big differnce.
+
+*/
