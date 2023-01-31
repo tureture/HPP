@@ -21,9 +21,20 @@ void merge_sort(int* list_to_sort, int N) {
   }
   int n1 = N / 2;
   int n2 = N - n1;
+
+  // Allocate on stack instead
+  int list1[n1];
+  int list2[n2];
+
   // Allocate new lists
-  int* list1 = (int*)malloc(n1*sizeof(int));
-  int* list2 = (int*)malloc(n2*sizeof(int));
+  // int* list1 = (int*)malloc(n1*sizeof(int));
+  // int* list2 = (int*)malloc(n2*sizeof(int));
+
+  // Allocating one big memory block and then splitting it into two lists
+  // int* list = (int*)malloc((n1+n2)*sizeof(int));
+  // int* list1 = list;
+  // int* list2 = list + n1;
+  
   int i;
   for(i = 0; i < n1; i++)
     list1[i] = list_to_sort[i];
@@ -51,7 +62,11 @@ void merge_sort(int* list_to_sort, int N) {
     list_to_sort[i++] = list1[i1++];
   while(i2 < n2)
     list_to_sort[i++] = list2[i2++];
-  free(list1);
-  free(list2);
+
+  // free(list);
+
+  // free(list1);
+  // free(list2);
+
 }
 

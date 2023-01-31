@@ -44,6 +44,7 @@ int main(int argc, char* argv[]) {
   // Sort list
   double time1 = get_wall_seconds();
   merge_sort(list_to_sort, N);
+  // bubble_sort(list_to_sort, N);
   printf("Sorting list with length %d took %7.3f wall seconds.\n", N, get_wall_seconds()-time1);  
 
   int count7_again = count_values(list_to_sort, N, 7);
@@ -62,3 +63,36 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
+
+/*
+Before memory leak:
+N = 10000000
+Before sort: the number 7 occurs 10027 times in the list.
+Sorting list with length 10000000 took   0.805 wall seconds.
+
+With memory leak:
+N = 10000000
+Before sort: the number 7 occurs 10027 times in the list.
+Sorting list with length 10000000 took   0.748 wall seconds.
+
+Why is it faster???
+
+
+
+After only one big allocation:
+N = 10000000
+Before sort: the number 7 occurs 10027 times in the list.
+Sorting list with length 10000000 took   0.691 wall seconds.
+
+Little bit faster now. Makes sense.
+
+Stack size is  8176 kB
+N = 1000000
+Before sort: the number 7 occurs 1051 times in the list.
+Sorting list with length 1000000 took   0.074 wall seconds
+
+Gets segfault when N = 10000000
+Makes sense since it is around 5 times larger than stack with int size 4 bytes
+means that it should work with N/10 and it does.
+
+*/
