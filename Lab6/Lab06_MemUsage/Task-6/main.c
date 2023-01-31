@@ -58,5 +58,7 @@ after adding pure directive to func.h
 
 after inserting function into main file 
 0.08s user 0.00s system 97% cpu 0.079 total
+
+
 */
 
