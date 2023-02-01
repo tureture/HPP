@@ -135,3 +135,20 @@ int main (int argc, char**args) {
   return 0;
 }
 
+/*
+Before:
+Doing 400 iterations with N=232 using apply_stencil function version 1 took   0.590 wall seconds.
+Doing 400 iterations with N=232 using apply_stencil function version 2 took   0.590 wall seconds.
+Doing 400 iterations with N=232 using apply_stencil function version 3 took   0.590 wal
+
+After:
+Doing 400 iterations with N=232 using apply_stencil function version 1 took   0.590 wall seconds.
+Doing 400 iterations with N=232 using apply_stencil function version 2 took   0.395 wall seconds.
+
+With stencil size = 4: 
+Doing 400 iterations with N=200 using apply_stencil function version 1 took   0.018 wall seconds.
+Doing 400 iterations with N=200 using apply_stencil function version 2 took   0.017 wall seconds.
+
+Reduces loop overhead so it becomes around 0.2s faster! But with too small 
+loop i guess the compiler already optimizes it away?
+*/
