@@ -18,7 +18,9 @@ int main (int argc, char**args) {
   double* a  = (double*)malloc(N1*sizeof(double));
   int i, j;
   for(i = 0; i < N1; i++)
-    a[i] = (rand() % 1000) * 0.001;
+    // a[i] = (rand() % 1000) * 0.001;
+    a[i] = (rand() % 500) * 0.001;
+
 
   int N2 = 20000;
   double time1;
@@ -58,4 +60,24 @@ int main (int argc, char**args) {
 
   return 0;
 }
+
+/*
+Before:
+
+With gcc-12
+f_std tests took   0.172 wall seconds.
+f_opt tests took   0.171 wall seconds.
+
+With gcc clang
+f_std tests took   0.458 wall seconds.
+f_opt tests took   0.458 wall seconds.
+
+After changing (and gcc clang):
+f_std tests took   0.458 wall seconds.
+f_opt tests took   0.458 wall seconds.
+
+Not sure why basically no change in performance.
+Maybe because of my computers specific architecture? 
+
+*/
 
