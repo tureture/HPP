@@ -8,20 +8,22 @@ Ture Hassler & Jacob Malmenstedt
 
 /// Define struct for linked list node containing data for a given day
 typedef struct node{
-    int day;
-    int min;
-    int max;
+    unsigned int day;
+    double min;
+    double max;
     struct node *next;
 } node_t;
 
+// Function headers
+void add(node_t ** head, unsigned int day, double min, double max);
+void print_list(node_t * head);
+void delete(node_t ** head, int day);
 
 int main() {
 
-    // initialize linked list pointer and allocate memory for first node
+    // initialize linked list pointer
     node_t *jan_ll = NULL;
-    jan_ll = (node_t*)malloc(sizeof(node_t)); 
-
-    //
+ 
     char command;
     int day;
     double min, max;
@@ -37,87 +39,129 @@ int main() {
             case 'A':
                 // read in day, min and max
                 scanf("%d %lf %lf", &day, &min, &max);
+                add(&jan_ll, day, min, max);
                 printf("%d %lf %lf \n", day, min, max);
 
                 break;
             
             case 'D':
-                // do stuff, deletes day
+                scanf("%d", &day);
+                delete(&jan_ll, day);
                 break;
 
             case 'P':
-                // do stuff, print all days
+                print_list(jan_ll);
                 break;
 
             default:
                 printf("Invalid command. Try again thx. \n");
         }
 
-
         printf("Enter command: ");
         scanf(" %c", &command);
-
-
     }
 
   return 0;
 }
 
-// combine these and stuff
-// All borrowed from https://www.learn-c.org/en/Linked_lists
 
-// Add to end of list 
-void push(node_t * head, int day, double min, double max) {
-    node_t * current = head;
-    while (current->next != NULL) {
-        current = current->next;
-    }
+// All methods modified and built upon 
+// https://www.learn-c.org/en/Linked_lists
 
-    /* now we can add a new variable */
-    current->next = (node_t *) malloc(sizeof(node_t));
-    current->next->val = val;
-    current->next->next = NULL;
-}
 
-// Add to beginning of list
-void push(node_t ** head, int val) {
+// Add to list
+void add(node_t ** head, unsigned int day, double min, double max) {
+    node_t * current;
+
+    // allocate memory
     node_t * new_node;
     new_node = (node_t *) malloc(sizeof(node_t));
 
-    new_node->val = val;
-    new_node->next = *head;
-    *head = new_node;
+    // set day, min, max in the new node
+    new_node -> day = day;
+    new_node -> min = min;
+    new_node -> max = max;
+    new_node -> next = NULL;
+
+    // List is empty
+    if (*head == NULL){
+
+        // set head so it points to the new node
+        *head = new_node;
+
+    }
+    // if list is not empty
+    else {
+        current = *head;
+
+         // case when adding to the beginning of the list
+        if (day < current->day) {
+            new_node->next = current;
+            *head = new_node;
+        } 
+        else { // Case when adding to the middle or end of the list
+
+            // loop through list
+            while (current -> next != NULL && day >= current -> next -> day){
+            current = current -> next;
+            }
+
+            // if day already exists, edit instead
+            if (day == current -> day){
+                current -> min = min;
+                current -> max = max;
+
+                free(new_node); // free memory, required since i always allocate memory at the start, not beatiful but works for now
+                return;
+            }
+            else {
+                // set current next to the new node, if 
+                new_node -> next = current -> next;
+                current -> next = new_node;
+
+            }        
+        }
+    }
+
+    return;
 }
 
-// remove specific index from list
-int remove_by_index(node_t ** head, int n) {
-    int i = 0;
-    int retval = -1;
-    node_t * current = *head;
-    node_t * temp_node = NULL;
+void print_list(node_t * head) {
+    node_t * current = head;
 
-    if (n == 0) {
-        return pop(head);
-    }
+    printf("day min max \n");
 
-    for (i = 0; i < n-1; i++) {
-        if (current->next == NULL) {
-            return -1;
-        }
+    while (current != NULL) {
+        printf("%d %f %f \n", current->day, current->min, current->max);
         current = current->next;
     }
+}
 
-    if (current->next == NULL) {
-        return -1;
+// Delete node from list, doesn't work if node dont exist, don't try that lol
+void delete(node_t ** head, int day) {
+    node_t * current = *head;
+    node_t * prev = NULL;
+
+    current = *head;
+
+    // case when its the first element of the list 
+    if (current -> day == day){
+        *head = current -> next; // Set head to second element
+        return;
+    }
+    else {
+        // loop through list
+        while (current -> day != day){
+            prev = current;
+            current = current -> next;
+        }
+
+        // remove node from list
+        prev -> next = current -> next;
     }
 
-    temp_node = current->next;
-    retval = temp_node->val;
-    current->next = temp_node->next;
-    free(temp_node);
-
-    return retval;
-
+    free(current); // free memory of the node we want to delete
+    return;
 }
 
 
