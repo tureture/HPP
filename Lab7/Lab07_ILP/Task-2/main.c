@@ -76,3 +76,13 @@ int main (int argc, char**args) {
   return 0;
 }
 
+/*
+Before:
+f_std tests took   0.424 wall seconds.
+f_opt tests took   0.424 wall seconds.
+
+After loop unrolling and removing for loop:
+f_std tests took   0.424 wall seconds.
+f_opt tests took   0.134 wall seconds.
+
+*/

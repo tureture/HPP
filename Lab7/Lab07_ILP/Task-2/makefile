@@ -1,6 +1,6 @@
-CC = gcc
-LD = gcc
-CFLAGS = -O2 -Wall -Werror
+CC = gcc-12
+LD = gcc-12
+CFLAGS = -O2 -funroll-loops -Wall -Werror
 LDFLAGS = 
 RM = /bin/rm -f
 OBJS = main.o testfuncs.o
