@@ -59,3 +59,14 @@ int main (int argc, char**args) {
   return 0;
 }
 
+/*
+Managed to get it down from 0.48 to 0.17 when using the clang? compiler.
+f_std tests took   0.458 wall seconds.
+f_opt tests took   0.171 wall seconds.
+
+However when using the gcc compiler it is 0.173 for both.
+Perhaps it does it automatically? Since it matches the 0.171s
+Branch prediction or something?
+*/
+
+
