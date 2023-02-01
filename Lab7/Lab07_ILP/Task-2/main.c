@@ -81,8 +81,15 @@ Before:
 f_std tests took   0.424 wall seconds.
 f_opt tests took   0.424 wall seconds.
 
-After loop unrolling and removing for loop:
+After loop unrolling and removing if inside loop:
 f_std tests took   0.424 wall seconds.
 f_opt tests took   0.134 wall seconds.
+
+With -funroll-loops
+f_std tests took   0.288 wall seconds.
+f_opt tests took   0.129 wall seconds.
+
+-funroll doesn't work with the if statement, not as big performance increase
+as previous task. Big improvement when we do it manually!
 
 */
