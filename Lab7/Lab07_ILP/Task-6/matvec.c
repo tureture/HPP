@@ -16,10 +16,15 @@ static double get_wall_seconds() {
 void matvec_autovec(double **mat_a,double *vec_b, double *vec_c,int SIZE)
 {
     int i, j;
+    double s;
 
-    for (i = 0; i < SIZE; i++)
-                for (j = 0; j < SIZE; j++)
-                        vec_c[i] += mat_a[i][j] * vec_b[j];
+    for (i = 0; i < SIZE; i++){
+        s = 0;
+        for (j = 0; j < SIZE; j++)
+                  s += mat_a[i][j] * vec_b[j];
+        vec_c[i] = s;
+
+    }     
 }
 
 /* Don't change this */
@@ -116,3 +121,31 @@ main(int argc, char *argv[])
   return 0;
 }
 
+/*
+Before:
+Ref: time = 0.254489
+Auto-vec: time = 0.231492
+e_sum: 0.000000
+
+With gcc-12
+Ref: time = 0.331486
+Auto-vec: time = 0.308151
+
+added double s so that not all loops need to go to the same memory location
+so it can be vectorized.
+
+After w/ gcc:
+Ref: time = 0.266868
+Auto-vec: time = 0.229985
+
+After with gcc-12:
+Ref: time = 0.969999
+Auto-vec: time = 0.955231
+
+compiler says it autovectorized loop at row 23, corresponds to inner for loop
+gcc -Rpass=loop-vectorize -O3 matvec.c 
+matvec.c:23:9: remark: vectorized loop (vectorization width: 2, interleaved count: 4) [-Rpass=loop-vectorize]
+        for (j = 0; j < SIZE; j++)
+
+
+*/
