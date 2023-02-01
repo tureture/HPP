@@ -21,7 +21,7 @@ void delete(node_t ** head, int day);
 
 int main() {
 
-    // initialize linked list pointer
+    // initialize linked list pointer to first node
     node_t *jan_ll = NULL;
  
     char command;
@@ -36,20 +36,19 @@ int main() {
 
         // Switch case for all commands
         switch (command) {
-            case 'A':
-                // read in day, min and max
+            case 'A': // read data and add to list
                 scanf("%d %lf %lf", &day, &min, &max);
                 add(&jan_ll, day, min, max);
                 printf("%d %lf %lf \n", day, min, max);
 
                 break;
             
-            case 'D':
+            case 'D': // read day and delete that from list
                 scanf("%d", &day);
                 delete(&jan_ll, day);
                 break;
 
-            case 'P':
+            case 'P': // print list
                 print_list(jan_ll);
                 break;
 
@@ -65,7 +64,7 @@ int main() {
 }
 
 
-// All methods modified and built upon 
+// All methods modified and built upon this link:
 // https://www.learn-c.org/en/Linked_lists
 
 
