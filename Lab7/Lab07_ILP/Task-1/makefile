@@ -1,5 +1,5 @@
-CC = gcc
-LD = gcc
+CC = gcc-12
+LD = gcc-12
 CFLAGS = -O2 -Wall -Werror
 LDFLAGS = 
 RM = /bin/rm -f

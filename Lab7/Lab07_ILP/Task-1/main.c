@@ -90,3 +90,39 @@ int main (int argc, char**args) {
   return 0;
 }
 
+/*
+Before loop unrolling:
+f_std tests took   0.332 wall seconds.
+f_opt tests took   0.332 wall seconds.
+
+After loop unrolling x4
+f_std tests took   0.330 wall seconds.
+f_opt tests took   0.133 wall seconds.
+
+After loop unrolling x2:
+f_std tests took   0.332 wall seconds.
+f_opt tests took   0.166 wall seconds.
+
+After with O3 and loop unrolling x2:
+f_std tests took   0.152 wall seconds.
+f_opt tests took   0.165 wall seconds.
+
+With -O2 and funroll-loops:
+f_std tests took   0.172 wall seconds.
+f_opt tests took   0.189 wall seconds.
+
+With funroll-loops and unrolling x8:
+f_std tests took   0.230 wall seconds.
+f_opt tests took   0.118 wall seconds.
+
+With unrolling x8 and no funroll-loops:
+f_std tests took   0.333 wall seconds.
+f_opt tests took   0.122 wall seconds.
+
+Fastest case was around x8 loop unroll for me, or with the compiler.
+Almost the same time with -funroll-loops and unrolling x8.
+
+
+*/
+
+
