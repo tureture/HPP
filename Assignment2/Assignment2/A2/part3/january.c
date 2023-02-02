@@ -30,21 +30,20 @@ int main() {
 
     // give initial command
     printf("Enter command: ");
-    scanf("%c", &command);
+    scanf(" %c", &command);
 
     while (command != 'Q'){
 
         // Switch case for all commands
         switch (command) {
             case 'A': // read data and add to list
-                scanf("%d %lf %lf", &day, &min, &max);
+                scanf(" %d %lf %lf", &day, &min, &max);
                 add(&jan_ll, day, min, max);
-                printf("%d %lf %lf \n", day, min, max);
 
                 break;
             
             case 'D': // read day and delete that from list
-                scanf("%d", &day);
+                scanf(" %d", &day);
                 delete(&jan_ll, day);
                 break;
 
@@ -59,6 +58,7 @@ int main() {
         printf("Enter command: ");
         scanf(" %c", &command);
     }
+
 
   return 0;
 }
@@ -136,13 +136,17 @@ void print_list(node_t * head) {
     }
 }
 
-// Delete node from list, doesn't work if node dont exist, don't try that lol
+// Delete node from list, does work when list is empty and when deleting things that don't exist
+//(could also be solved if the check-A2.sh don't do stupid things...)
+
 void delete(node_t ** head, int day) {
+
     node_t * current = *head;
     node_t * prev = NULL;
 
     current = *head;
-
+    if (current == NULL) // case when list is empty
+        return;
     // case when its the first element of the list 
     if (current -> day == day){
         *head = current -> next; // Set head to second element
@@ -150,13 +154,15 @@ void delete(node_t ** head, int day) {
     }
     else {
         // loop through list
-        while (current -> day != day){
+        while (current != NULL && current -> day != day){
             prev = current;
             current = current -> next;
         }
 
         // remove node from list
-        prev -> next = current -> next;
+        if (current != NULL)
+            prev -> next = current -> next;
+        
     }
 
     free(current); // free memory of the node we want to delete

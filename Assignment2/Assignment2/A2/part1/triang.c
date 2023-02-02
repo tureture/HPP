@@ -30,7 +30,8 @@ int main(int argc, char **argv) {
 
         //print
         print_array(array, j+1);
-        if (j != n-1) printf("\n"); // dont print newline after last row quickfix
+        //if (j != n-1)
+        printf("\n"); // dont print newline after last row quickfix
     }
 
     free(array); // free memory
