@@ -68,12 +68,12 @@ int main(int argc, char* argv[]) {
 Before memory leak:
 N = 10000000
 Before sort: the number 7 occurs 10027 times in the list.
-Sorting list with length 10000000 took   0.805 wall seconds.
+Sorting list with length 10 000 000 took   0.805 wall seconds.
 
 With memory leak:
 N = 10000000
 Before sort: the number 7 occurs 10027 times in the list.
-Sorting list with length 10000000 took   0.748 wall seconds.
+Sorting list with length 10 000 000 took   0.748 wall seconds.
 
 Why is it faster???
 

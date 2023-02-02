@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
 
         //print
         print_array(array, j+1);
+        if (j != n-1) printf("\n"); // dont print newline after last row quickfix
     }
 
     free(array); // free memory
@@ -39,6 +40,7 @@ int main(int argc, char **argv) {
 
 void print_array(double *arr, int n){
     int i;
-    for(i=0; i<n; ++i) printf("%d ", (int)arr[i]);
-    printf("\n");
+    for(i=0; i<n; ++i) {
+        printf("%d ", (int)arr[i]);
+    }
 }
