@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <sys/time.h>
 
-#define NUM_THREADS 10
+#define NUM_THREADS 1000
 
 double **A,**B,**C;
 int n;

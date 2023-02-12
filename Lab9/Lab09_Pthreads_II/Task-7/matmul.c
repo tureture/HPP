@@ -92,7 +92,14 @@ int main(int argc, char *argv[]) {
 /*
 Before: 1000x1000 Elapsed time: 11.780724 wall seconds
 
-After: 1000x1000 Elapsed time: 1.501948 wall seconds
+After: 
+1000x1000 Elapsed time: 1.501948 wall seconds, 8 threads
+1000x1000 Elapsed time: 2.907595 wall seconds, 4 threads
+1000x1000 Elapsed time: 0.985915 wall seconds, 16 threads
+1000x1000 Elapsed time: 0.716500 wall seconds, 32 threads
+1000x1000 Elapsed time: 0.575041 wall seconds, 100 threads
+1000x1000 Elapsed time: 0.606297 wall seconds, 1000 threads
 
 Below around 100x100 the paralell version is slower than the serial one.
+Seems like the vitsippa computer has 16 threads, not sure why more than that is faster. 
 */
