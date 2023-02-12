@@ -99,3 +99,16 @@ Lab9/Lab09_Pthreads_II/._Task-4
 Lab9/Lab09_Pthreads_II/._Task-5
 Lab9/Lab09_Pthreads_II/._Task-6
 Lab9/Lab09_Pthreads_II/._Task-7
+Lab9/Lab09_Pthreads_II/Task-1/._threadtest.c
+Lab9/Lab09_Pthreads_II/Task-2/._wait_test.c
+Lab9/Lab09_Pthreads_II/Task-3/._join.c
+Lab9/Lab09_Pthreads_II/Task-3/._Makefile
+Lab9/Lab09_Pthreads_II/Task-4/._spinwait.c
+Lab9/Lab09_Pthreads_II/Task-4/._synch.c
+Lab9/Lab09_Pthreads_II/Task-5/._Makefile
+Lab9/Lab09_Pthreads_II/Task-5/._pi.c
+Lab9/Lab09_Pthreads_II/Task-5/pi.c
+Lab9/Lab09_Pthreads_II/Task-6/._enumsort.c
+Lab9/Lab09_Pthreads_II/Task-6/._Makefile
+Lab9/Lab09_Pthreads_II/Task-7/._Makefile
+Lab9/Lab09_Pthreads_II/Task-7/._matmul.c
