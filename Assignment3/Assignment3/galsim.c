@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
         printf("particle %d velocity %lf %lf\n", i, vel[2 * i], vel[2 * i + 1]);
         printf("particle %d brightness %lf\n", i, brightness[i]);
     }
+    // ***********************Do the simulation ***************************************
 
     // Initialize graphics
     if (graphics)
@@ -111,9 +112,8 @@ int main(int argc, char *argv[])
         CloseDisplay();
     }
 
-    // Do simulation
-    // ...
-    else{
+//********************** No Graphics************************************************************
+    else{ 
 
 
     for (int i = 0; i < nsteps; i++) // for all timesteps
@@ -155,6 +155,18 @@ int main(int argc, char *argv[])
         }
     }
     }
+
+    // Write to binary file
+    FILE *file_out;
+    file_out = fopen("result.gal", "w");
+    for (int i = 0; i < N; i++)
+    {
+        fwrite(&pos_and_mass[3 * i], sizeof(double), 3, file_out);
+        fwrite(&vel[2 * i], sizeof(double), 2, file_out);
+        fwrite(&brightness[i], sizeof(double), 1, file_out);
+    }
+    fclose(file_out);
+    
     // Free memory
     free(pos_and_mass);
     free(vel);
