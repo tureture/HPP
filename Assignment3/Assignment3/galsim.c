@@ -8,6 +8,7 @@ int main(int argc, char *argv[]) {
     char *filename;
     double delta_t;
 
+
     // Parse command line arguments
     if (argc != 6) {
         printf("Usage: ./galsim N filename nsteps delta_t graphics\n");
@@ -18,6 +19,11 @@ int main(int argc, char *argv[]) {
     nsteps = atoi(argv[3]);
     delta_t = atof(argv[4]);
     graphics = atoi(argv[5]);
+
+    // Allocate memory for N particles
+    double * pos_and_mass = (double *) malloc(3 * N * sizeof(double)); 
+    double * vel = (double *) malloc(2 * N * sizeof(double));
+    double * brightness = (double *) malloc(N * sizeof(double));
 
     // Read input data from file
     FILE *file = fopen(filename, "r");
