@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
     double *pos_and_mass = (double *)malloc(3 * N * sizeof(double)); // x, y, mass
     double *vel = (double *)malloc(2 * N * sizeof(double));        // vx, vy
     double *brightness = (double *)malloc(N * sizeof(double));    // brightness
-    double acc_x = 0, acc_y = 0;
-    double rij, e0 = 0.001;
-    double G = 100 / N;
+    double acc_x = 0, acc_y = 0;                              // acceleration
+    double rij, e0 = 0.001;                                  
+    double G = 100 / N;                                 // gravitational constant
 
     // Read input data from file
     FILE *file = fopen(filename, "r");
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
         fread(&brightness[i], sizeof(double), 1, file);
     }
     fclose(file);
-
+    /*
     for (int i = 0; i < N; i++)
     {
         printf("particle %d position %lf %lf\n", i, pos_and_mass[3 * i], pos_and_mass[3 * i + 1]);
@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
         printf("particle %d velocity %lf %lf\n", i, vel[2 * i], vel[2 * i + 1]);
         printf("particle %d brightness %lf\n", i, brightness[i]);
     }
+    */
     // ***********************Do the simulation ***************************************
 
     // Initialize graphics
@@ -102,7 +103,8 @@ int main(int argc, char *argv[])
 
             for (int i = 0; i < N; i++)
             {
-                DrawCircle((float)pos_and_mass[3 * i], (float)pos_and_mass[3 * i + 1], 1.0, 1.0, pos_and_mass[3 * i + 2] / 200, 0.0);
+                //DrawCircle((float)pos_and_mass[3 * i], (float)pos_and_mass[3 * i + 1], 1.0, 1.0, pos_and_mass[3 * i + 2] / 200, 0.0);
+                DrawCircle((float)pos_and_mass[3 * i], (float)pos_and_mass[3 * i + 1], 1.0, 1.0, 0.025, 0.0);
             }
             Refresh();
             /* Sleep a short while to avoid screen flickering. */
@@ -166,7 +168,7 @@ int main(int argc, char *argv[])
         fwrite(&brightness[i], sizeof(double), 1, file_out);
     }
     fclose(file_out);
-    
+
     // Free memory
     free(pos_and_mass);
     free(vel);
