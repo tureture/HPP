@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     
     for (int i = 0; i < nsteps; i++) // for all timesteps
     {
-        for (int j = 0; j < N; j++) // for all particles
+        for (int j = 0; j < N; j++) // for all particles update acc and vel
         {
 
             //calc acceleration
@@ -103,6 +103,15 @@ int main(int argc, char *argv[])
             vel[2 * j] += acc_x * delta_t;
             vel[2 * j + 1] += acc_y * delta_t;
 
+            //reset acceleration
+            acc_x = 0;
+            acc_y = 0;
+        }
+        for (int j = 0; j < N; j++) // for all particles update pos
+        {
+            //update position
+            pos_and_mass[3 * j] += vel[2 * j] * delta_t;
+            pos_and_mass[3 * j + 1] += vel[2 * j + 1] * delta_t;
         }
     }
 
