@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
     graphics = atoi(argv[5]);
 
     // Allocate memory for N particles
-    double *pos_and_mass = (double *)malloc(3 * N * sizeof(double));
-    double *vel = (double *)malloc(2 * N * sizeof(double));
-    double *brightness = (double *)malloc(N * sizeof(double));
+    double *pos_and_mass = (double *)malloc(3 * N * sizeof(double)); // x, y, mass
+    double *vel = (double *)malloc(2 * N * sizeof(double));        // vx, vy
+    double *brightness = (double *)malloc(N * sizeof(double));    // brightness
 
     // Read input data from file
     FILE *file = fopen(filename, "r");
@@ -72,6 +72,39 @@ int main(int argc, char *argv[])
 
     // Do simulation
     // ...
+
+    double acc_x = 0, acc_y = 0;
+    double rij, e0 = 0.001;
+    double G = 100/N;
+    
+    for (int i = 0; i < nsteps; i++) // for all timesteps
+    {
+        for (int j = 0; j < N; j++) // for all particles
+        {
+
+            //calc acceleration
+            for (int kf=0; kf<j; kf++){
+                //all particles before current particle
+                rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * kf])*(pos_and_mass[3 * j] - pos_and_mass[3 * kf]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1])*(pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]));
+                acc_x += pos_and_mass[3 * kf + 2] / ((rij + e0)*(rij + e0)*(rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * kf]);
+                acc_y += pos_and_mass[3 * kf + 2] / ((rij + e0)*(rij + e0)*(rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]);
+            }
+            for (int ka=j+1; ka<N; ka++){
+                //all particles after current particle
+                rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * ka])*(pos_and_mass[3 * j] - pos_and_mass[3 * ka]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1])*(pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]));
+                acc_x += pos_and_mass[3 * ka + 2] / ((rij + e0)*(rij + e0)*(rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * ka]);
+                acc_y += pos_and_mass[3 * ka + 2] / ((rij + e0)*(rij + e0)*(rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]);
+                
+            }
+            acc_x *= -G;
+            acc_y *= -G;
+
+            //update velocity
+            vel[2 * j] += acc_x * delta_t;
+            vel[2 * j + 1] += acc_y * delta_t;
+
+        }
+    }
 
     // Free memory
     free(pos_and_mass);
