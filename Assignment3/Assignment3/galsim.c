@@ -31,10 +31,14 @@ int main(int argc, char *argv[]) {
         printf("Error opening file\n");
         return 1;
     }
-    double *positions = (double *) malloc(2 * N * sizeof(double));
-    double *masses = (double *) malloc(N * sizeof(double));
-    double *velocities = (double *) malloc(2 * N * sizeof(double));
-    double *brightnesses = (double *) malloc(N * sizeof(double));
+
+    for (int i = 0; i< N; i++){
+        fread(&pos_and_mass[3*i], sizeof(double), 3, file);
+        fread(&vel[2*i], sizeof(double), 2, file);
+        fread(&brightness[i], sizeof(double), 1, file);
+    }
+    fclose(file);
+    /*
     for (int i = 0; i < N; i++) {
         fscanf(file, "particle %d position %lf %lf\n", &i, &positions[2*i], &positions[2*i+1]);
         fscanf(file, "particle %d mass %lf\n", &i, &masses[i]);
@@ -42,15 +46,20 @@ int main(int argc, char *argv[]) {
         fscanf(file, "particle %d brightness %lf\n", &i, &brightnesses[i]);
     }
     fclose(file);
-
+    */
+    for (int i = 0; i < N; i++) {
+        printf("particle %d position %lf %lf\n", i, pos_and_mass[3*i], pos_and_mass[3*i+1]);
+        printf("particle %d mass %lf\n", i, pos_and_mass[3*i+2]);
+        printf("particle %d velocity %lf %lf\n", i, vel[2*i], vel[2*i+1]);
+        printf("particle %d brightness %lf\n", i, brightness[i]);
+    }
     // Do simulation
     // ...
 
     // Free memory
-    free(positions);
-    free(masses);
-    free(velocities);
-    free(brightnesses);
+    free(pos_and_mass);
+    free(vel);
+    free(brightness);
 
     return 0;
 }
