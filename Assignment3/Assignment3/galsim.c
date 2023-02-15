@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+Assignment 3
+High Performance Computing
+By Ture Hassler & Jacob Malmenstedt
+*/
+
 int main(int argc, char *argv[])
 {
     int N, nsteps, graphics;
@@ -45,13 +51,6 @@ int main(int argc, char *argv[])
     }
     fclose(file);
 
-    for (int i = 0; i < N; i++)
-    {
-        printf("particle %d position %lf %lf\n", i, pos_and_mass[3 * i], pos_and_mass[3 * i + 1]);
-        printf("particle %d mass %lf\n", i, pos_and_mass[3 * i + 2]);
-        printf("particle %d velocity %lf %lf\n", i, vel[2 * i], vel[2 * i + 1]);
-        printf("particle %d brightness %lf\n", i, brightness[i]);
-    }
     // ***********************Do the simulation ***************************************
 
     // Initialize graphics
@@ -106,7 +105,7 @@ int main(int argc, char *argv[])
             }
             Refresh();
             /* Sleep a short while to avoid screen flickering. */
-            usleep(3000);
+            usleep(1000);
         }
         FlushDisplay();
         CloseDisplay();
