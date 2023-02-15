@@ -1,0 +1,12 @@
+Here i will just write down the time for some of the test runs i have done
+Before and after different changes
+
+15 Feb:
+Before -O3
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  6.54s user 0.02s system 99% cpu 6.569 total
+
+After -O3
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  1.04s user 0.01s system 99% cpu 1.052 total
+
+After -O3 and -ffast-math, better but might give too bad precision? Need to check
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.82s user 0.01s system 99% cpu 0.824 total
