@@ -50,18 +50,10 @@ int main(int argc, char *argv[])
         fread(&brightness[i], sizeof(double), 1, file);
     }
     fclose(file);
-    /*
-    for (int i = 0; i < N; i++)
-    {
-        printf("particle %d position %lf %lf\n", i, pos_and_mass[3 * i], pos_and_mass[3 * i + 1]);
-        printf("particle %d mass %lf\n", i, pos_and_mass[3 * i + 2]);
-        printf("particle %d velocity %lf %lf\n", i, vel[2 * i], vel[2 * i + 1]);
-        printf("particle %d brightness %lf\n", i, brightness[i]);
-    }
-    */
+
     // ***********************Do the simulation ***************************************
 
-    // Initialize graphics
+    // Initialize graphics, separate if else statement to avoid unnecessary calculations
     if (graphics)
     {
         InitializeGraphics("Galaxy Simulation", 800, 800);

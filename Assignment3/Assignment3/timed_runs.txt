@@ -10,3 +10,8 @@ After -O3
 
 After -O3 and -ffast-math, better but might give too bad precision? Need to check
 ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.82s user 0.01s system 99% cpu 0.824 total
+
+16 Feb: 
+Original implementation, -O3
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.82s user 0.00s system 99% cpu 0.823 total
+
