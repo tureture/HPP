@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     double *brightness = (double *)malloc(N * sizeof(double));       // brightness
     double acc_x = 0, acc_y = 0;                                     // acceleration
     double rij, e0 = 0.001;
-    double G = 100 / N; // gravitational constant
+    double G = 100.0 / N; // gravitational constant
 
     // Read input data from file
     FILE *file = fopen(filename, "r");
