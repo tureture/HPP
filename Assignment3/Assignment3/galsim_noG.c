@@ -80,12 +80,17 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    for (int i = 0; i < N; i++)
-    {
-        fread(&pos_and_mass[3 * i], sizeof(double), 3, file);
-        fread(&vel[2 * i], sizeof(double), 2, file);
-        fread(&brightness[i], sizeof(double), 1, file);
-    }
+    // Read data from file and initialize particles
+for (int i = 0; i < N; i++)
+{
+    fread(&particles[i].x, sizeof(double), 1, file);
+    fread(&particles[i].y, sizeof(double), 1, file);
+    fread(&particles[i].mass, sizeof(double), 1, file);
+    fread(&particles[i].vx, sizeof(double), 1, file);
+    fread(&particles[i].vy, sizeof(double), 1, file);
+    fread(&particles[i].brightness, sizeof(double), 1, file);
+}
+fclose(file);
     fclose(file);
 
     double time3 = get_wall_seconds();
@@ -97,65 +102,51 @@ int main(int argc, char *argv[])
         for (int j = 0; j < N; j++) // for all particles update acc and vel
         {
 
-            // calc acceleration
-            for (k = 0; k < j; k++) // all particles before current particle
-            {
-                
-                
-                    // all particles before current particle
-                    rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * k]) * (pos_and_mass[3 * j] - pos_and_mass[3 * k]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * k + 1]) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * k + 1]));
-                    acc_x += pos_and_mass[3 * k + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * k]);
-                    acc_y += pos_and_mass[3 * k + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * k + 1]);          
-                
+                // calc acceleration
+                for (k = 0; k < j; k++) // all particles before current particle
+                {
+                    struct Particle p1 = particles[j];
+                    struct Particle p2 = particles[k];
+                    double rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+                    double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
+                    particles[j].vx += acc_k * (p1.x - p2.x);
+                    particles[j].vy += acc_k * (p1.y - p2.y);
+                }
+                for (k = j + 1; k < N; k++) // all particles after current particle
+                {
+                    struct Particle p1 = particles[j];
+                    struct Particle p2 = particles[k];
+                    double rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+                    double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
+                    particles[j].vx += acc_k * (p1.x - p2.x);
+                    particles[j].vy += acc_k * (p1.y - p2.y);
+                }
+                particles[j].vx *= -G;
+                particles[j].vy *= -G;
 
-            }
-            for (k = j + 1; k < N; k++) // all particles after current particle
-            {
-                
-                    rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * k]) * (pos_and_mass[3 * j] - pos_and_mass[3 * k]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * k + 1]) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * k + 1]));
-                    acc_x += pos_and_mass[3 * k + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * k]);
-                    acc_y += pos_and_mass[3 * k + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * k + 1]);             
-                    
-            }
-            acc_x *= -G;
-            acc_y *= -G;
-
-            // update velocity
-            vel[2 * j] += acc_x * delta_t;
-            vel[2 * j + 1] += acc_y * delta_t;
-
-            // reset acceleration
-            acc_x = 0;
-            acc_y = 0;
-        }
-        for (int j = 0; j < N; j++) // for all particles update pos
-        {
-            // update position
-            pos_and_mass[3 * j] += vel[2 * j] * delta_t;
-            pos_and_mass[3 * j + 1] += vel[2 * j + 1] * delta_t;
-        }
+                // update velocity
+                particles[j].x += particles[j].vx * delta_t;
+                particles[j].y += particles[j].vy * delta_t;
+                }
+                for (int j = 0; j < N; j++) // for all particles update pos
+                {
+                    // update position
+                    particles[j].x += particles[j].vx * delta_t;
+                    particles[j].y += particles[j].vy * delta_t;
+                }
     }
 
     double time4 = get_wall_seconds();
     
 
-    // Write to binary file
-    FILE *file_out;
-    file_out = fopen("result.gal", "w");
-    for (int i = 0; i < N; i++)
-    {
-        fwrite(&pos_and_mass[3 * i], sizeof(double), 3, file_out);
-        fwrite(&vel[2 * i], sizeof(double), 2, file_out);
-        fwrite(&brightness[i], sizeof(double), 1, file_out);
-    }
-    fclose(file_out);
+
 
     double time5 = get_wall_seconds();
 
     // Free memory
-    free(pos_and_mass);
-    free(vel);
-    free(brightness);
+    // free(pos_and_mass);
+    //free(vel);
+    //free(brightness);
 
     double time6 = get_wall_seconds();
 

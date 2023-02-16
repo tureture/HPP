@@ -1,7 +1,10 @@
 Here i will just write down the time for some of the test runs i have done
 Before and after different changes
 
-15 Feb:
+FOr easy copypaste access:
+ ./a.out 3000 ../ref_output_data/ellipse_N_03000_after100steps.gal ../result.gal
+
+15 Feb, all m2 chip:
 Before -O3
 ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  6.54s user 0.02s system 99% cpu 6.569 total
 
@@ -12,6 +15,50 @@ After -O3 and -ffast-math, better but might give too bad precision? Need to chec
 ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.82s user 0.01s system 99% cpu 0.824 total
 
 16 Feb: 
-Original implementation, -O3
+Original implementation, -O3 -ffast-math, m2 chip
 ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.82s user 0.00s system 99% cpu 0.823 total
+
+same run as above but with detailed prints for the different times:
+Total time: 0.820722 
+Time for parsing: 0.000002 
+Time for reading file: 0.000907 
+Time for simulation: 0.819264 
+Time for writing file: 0.000548 
+Time for freeing memory: 0.000001 
+
+Faster one randomly:
+Total time: 0.803562 
+Time for parsing: 0.000001 
+Time for reading file: 0.000395 
+Time for simulation: 0.802637 
+Time for writing file: 0.000527 
+Time for freeing memory: 0.000002 
+./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.80s user 0.00s system 99% cpu 0.807 total
+
+Fastest run after adding const to G and e0
+Total time: 0.800589 
+Time for parsing: 0.000001 
+Time for reading file: 0.000350 
+Time for simulation: 0.799660 
+Time for writing file: 0.000577 
+Time for freeing memory: 0.000001 
+./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.80s user 0.00s system 99% cpu 0.804 total
+
+After reordering order of multiplications, bad don't do this
+Total time: 0.887251 
+Time for parsing: 0.000003 
+Time for reading file: 0.000901 
+Time for simulation: 0.885906 
+Time for writing file: 0.000440 
+Time for freeing memory: 0.000001 
+./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.89s user 0.01s system 88% cpu 1.012 total
+
+When converting to a struct instead. Shouldnt this be bad?
+Total time: 0.678828 
+Time for parsing: 0.000002 
+Time for reading file: 0.001181 
+Time for simulation: 0.677645 
+Time for writing file: 0.000000 
+Time for freeing memory: 0.000000 
+./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.68s user 0.00s system 99% cpu 0.685 total
 
