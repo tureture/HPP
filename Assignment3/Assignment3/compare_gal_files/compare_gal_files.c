@@ -15,6 +15,7 @@ int read_doubles_from_file(int n, double* p, const char* fileName) {
     printf("read_doubles_from_file error: failed to open input file '%s'.\n", fileName);
     return -1;
   }
+  
   /* Get filesize using fseek() and ftell(). */
   fseek(input_file, 0L, SEEK_END);
   size_t fileSize = ftell(input_file);
@@ -113,7 +114,7 @@ int main(int argc, const char* argv[]) {
     update_maxdiff(pos_dx, pos_dy, &pos_maxdiff);
     update_maxdiff(vel_dx, vel_dy, &vel_maxdiff);
   }
-  printf("pos_maxdiff = %16.12f\n", pos_maxdiff);
-  printf("vel_maxdiff = %16.12f\n", vel_maxdiff);
+  printf("pos_maxdiff = %16.24f\n", pos_maxdiff);
+  printf("vel_maxdiff = %16.24f\n", vel_maxdiff);
   return 0;
 }
