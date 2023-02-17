@@ -110,20 +110,20 @@ fclose(file);
                     struct Particle p2 = particles[k];
                     double rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
                     //double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
-                    double Fx = (p2.mass*-G*(p1.x - p2.x))/((rij + e0) * (rij + e0) * (rij + e0));
-                    double Fy = (p2.mass*-G*(p1.y - p2.y))/((rij + e0) * (rij + e0) * (rij + e0));
-                    particles[j].acc_x += Fx;
-                    particles[j].acc_y += Fy;
-                    particles[k].acc_x += -Fx*p1.mass/p2.mass;
-                    particles[k].acc_y += -Fy*p1.mass/p2.mass;
+                    double Fx = ((p1.x - p2.x))/((rij + e0) * (rij + e0) * (rij + e0));
+                    double Fy = ((p1.y - p2.y))/((rij + e0) * (rij + e0) * (rij + e0));
+                    particles[j].acc_x += Fx*p2.mass;
+                    particles[j].acc_y += Fy*p2.mass;
+                    particles[k].acc_x += -Fx*p1.mass;
+                    particles[k].acc_y += -Fy*p1.mass;
                 }
 
                 }
                 for (int j = 0; j < N; j++) // for all particles update pos and vel
                 {
                     // update velocity
-                    particles[j].vx += particles[j].acc_x * delta_t;
-                    particles[j].vy += particles[j].acc_y * delta_t;
+                    particles[j].vx += particles[j].acc_x * -G * delta_t;
+                    particles[j].vy += particles[j].acc_y * -G * delta_t;
 
                     // update position
                     particles[j].x += particles[j].vx * delta_t;

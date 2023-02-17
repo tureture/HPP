@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     double *acc = (double *)malloc(N * sizeof(double));                              // acceleration
     double rij, e0 = 0.001;
     double G = 100.0 / N; // gravitational constant
+    double x_dist, y_dist, inv_cube_dist;
     double acc_x, acc_y;
 
     // Read input data from file
@@ -66,19 +67,25 @@ int main(int argc, char *argv[])
             {
 
                 // calc acceleration
-                for (int kf = 0; kf < j; kf++)
+                for (int k = 0; k < j; k++)
                 {
                     // all particles before current particle
-                    rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * kf]) * (pos_and_mass[3 * j] - pos_and_mass[3 * kf]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]));
-                    //acc_x += pos_and_mass[3 * kf + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * kf]);
-                    //acc_y += pos_and_mass[3 * kf + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]);
+                    x_dist = (pos_and_mass[3 * j] - pos_and_mass[3 * k]);
+                    y_dist = (pos_and_mass[3 * j + 1] - pos_and_mass[3 * k + 1]);
+                    rij = sqrt(x_dist*x_dist + y_dist*y_dist);
+                    inv_cube_dist = 1/((rij + e0) * (rij + e0) * (rij + e0));
+                    acc_x += pos_and_mass[3 * k + 2] * inv_cube_dist * x_dist;
+                    acc_y += pos_and_mass[3 * k + 2] * inv_cube_dist * y_dist;
                 }
-                for (int ka = j + 1; ka < N; ka++)
+                for (int k = j+1; k < N; k++)
                 {
                     // all particles after current particle
-                    rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * ka]) * (pos_and_mass[3 * j] - pos_and_mass[3 * ka]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]));
-                   // acc_x += pos_and_mass[3 * ka + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * ka]);
-                   // acc_y += pos_and_mass[3 * ka + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]);
+                    x_dist = (pos_and_mass[3 * j] - pos_and_mass[3 * k]);
+                    y_dist = (pos_and_mass[3 * j + 1] - pos_and_mass[3 * k + 1]);
+                    rij = sqrt(x_dist*x_dist + y_dist*y_dist);
+                    inv_cube_dist = 1/((rij + e0) * (rij + e0) * (rij + e0));
+                    acc_x += pos_and_mass[3 * k + 2] * inv_cube_dist * x_dist;
+                    acc_y += pos_and_mass[3 * k + 2] * inv_cube_dist * y_dist;
                 }
                 //acc_x *= -G;
                 //acc_y *= -G;
