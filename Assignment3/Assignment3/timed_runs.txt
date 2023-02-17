@@ -97,3 +97,32 @@ tried rewriting original code with arrays and saving the acceleration, same as t
 
 Using the struct rewritten one that saves the accelleration:
 ./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  1.61s user 0.01s system 99% cpu 1.621 total
+
+final version using -O1 
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  1.11s user 0.01s system 99% cpu 1.115 total
+
+final version using -O2
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.66s user 0.00s system 90% cpu 0.736 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.00s system 99% cpu 0.676 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.66s user 0.00s system 99% cpu 0.671 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.00s system 99% cpu 0.671 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.65s user 0.00s system 99% cpu 0.661 total
+
+final version using -O3
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.68s user 0.00s system 77% cpu 0.875 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.00s system 99% cpu 0.675 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.00s system 99% cpu 0.674 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.01s system 99% cpu 0.674 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.00s system 99% cpu 0.675 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.00s system 99% cpu 0.674 total
+turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.01s system 99% cpu 0.676 total
