@@ -97,44 +97,46 @@ fclose(file);
 
     // ***********************Do the simulation ***************************************
 
-    for (int i = 0; i < nsteps; i++) // for all timesteps
-    {
-        for (int j = 0; j < N; j++) // for all particles update acc and vel
-        {
+    for (int j = 0; j < N; j++) {
+    // pre-calculate particle j values
+    struct Particle p1 = particles[j];
+    double j_vx = p1.vx;
+    double j_vy = p1.vy;
+    double j_x = p1.x;
+    double j_y = p1.y;
 
-                // calc acceleration
-                for (k = 0; k < j; k++) // all particles before current particle
-                {
-                    struct Particle p1 = particles[j];
-                    struct Particle p2 = particles[k];
-                    double rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-                    double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
-                    particles[j].vx += acc_k * (p1.x - p2.x);
-                    particles[j].vy += acc_k * (p1.y - p2.y);
-                }
-                for (k = j + 1; k < N; k++) // all particles after current particle
-                {
-                    struct Particle p1 = particles[j];
-                    struct Particle p2 = particles[k];
-                    double rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-                    double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
-                    particles[j].vx += acc_k * (p1.x - p2.x);
-                    particles[j].vy += acc_k * (p1.y - p2.y);
-                }
-                particles[j].vx *= -G;
-                particles[j].vy *= -G;
+    for (int k = 0; k < N; k++) {
+        if (j == k) {
+            continue;
+        }
+        // pre-calculate particle k values
+        struct Particle p2 = particles[k];
+        double dx = p1.x - p2.x;
+        double dy = p1.y - p2.y;
+        double rij = sqrt(dx * dx + dy * dy);
+        double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
 
-                // update velocity
-                particles[j].x += particles[j].vx * delta_t;
-                particles[j].y += particles[j].vy * delta_t;
-                }
-                for (int j = 0; j < N; j++) // for all particles update pos
-                {
-                    // update position
-                    particles[j].x += particles[j].vx * delta_t;
-                    particles[j].y += particles[j].vy * delta_t;
-                }
+        j_vx += acc_k * dx;
+        j_vy += acc_k * dy;
     }
+
+    j_vx *= -G;
+    j_vy *= -G;
+
+    // update velocity
+    j_x += j_vx * delta_t;
+    j_y += j_vy * delta_t;
+
+    // update position
+    j_x += j_vx * delta_t;
+    j_y += j_vy * delta_t;
+
+    // write back particle j values
+    particles[j].vx = j_vx;
+    particles[j].vy = j_vy;
+    particles[j].x = j_x;
+    particles[j].y = j_y;
+}
 
     double time4 = get_wall_seconds();
     

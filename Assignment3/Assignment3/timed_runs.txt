@@ -62,3 +62,14 @@ Time for writing file: 0.000000
 Time for freeing memory: 0.000000 
 ./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.68s user 0.00s system 99% cpu 0.685 total
 
+Feb 17:
+After reordering struct operations and using one large for instead of two:
+Total time: 0.029478 
+Time for parsing: 0.000004 
+Time for reading file: 0.001467 
+Time for simulation: 0.028007 
+Time for writing file: 0.000000 
+Time for freeing memory: 0.000000 
+./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.03s user 0.00s system 95% cpu 0.035 total
+
+Can this really be correct???
