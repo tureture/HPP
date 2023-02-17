@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     double *pos_and_mass = (double *)malloc(3 * N * sizeof(double)); // x, y, mass
     double *vel = (double *)malloc(2 * N * sizeof(double));          // vx, vy
     double *brightness = (double *)malloc(N * sizeof(double));       // brightness
-    double *acc = (double *)malloc(N * sizeof(double));                              // acceleration
+    double *acc = (double *)malloc(N * sizeof(double));              // acceleration
     double rij, e0 = 0.001;
     double G = 100.0 / N; // gravitational constant
     double x_dist, y_dist, inv_cube_dist;
