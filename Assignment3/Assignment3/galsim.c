@@ -10,9 +10,9 @@ High Performance Computing
 By Ture Hassler & Jacob Malmenstedt
 */
 
-
 // Define a struct for the particle
-struct Particle {
+struct Particle
+{
     double x;
     double y;
     double mass;
@@ -21,9 +21,8 @@ struct Particle {
     double brightness;
 };
 
-
 int main(int argc, char *argv[])
-{   
+{
 
     // Parse command line arguments and initialize input variables
     if (argc != 6)
@@ -32,19 +31,19 @@ int main(int argc, char *argv[])
         return 1;
     }
     int N = atoi(argv[1]);
-    char * filename = argv[2];
+    char *filename = argv[2];
     int nsteps = atoi(argv[3]);
     double delta_t = atof(argv[4]);
     int graphics = atoi(argv[5]);
 
     // Allocate memory for N particles
     struct Particle *particles = (struct Particle *)malloc(N * sizeof(struct Particle));
- 
+
     // initialize variables inside for loops
     double acc_x = 0, acc_y = 0, acc_k; // acceleration
-    double rij; // distance between particles
-    const double e0 = 0.001; // weird constant
-    const double G = 100.0 / N; // gravitational constant
+    double rij;                         // distance between particles
+    const double e0 = 0.001;            // weird constant
+    const double G = 100.0 / N;         // gravitational constant
     int k;
     struct Particle p1, p2; // particles
 
@@ -67,7 +66,6 @@ int main(int argc, char *argv[])
     }
     fclose(file);
 
-
     // ***********************Do the simulation ***************************************
 
     // Initialize graphics, separate if else statement to avoid unnecessary calculations
@@ -85,7 +83,7 @@ int main(int argc, char *argv[])
 
                 for (k = 0; k < j; k++) // calculations of acc for all particles before current particle
                 {
-                    
+
                     p2 = particles[k];
                     rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
                     acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
@@ -111,7 +109,6 @@ int main(int argc, char *argv[])
                 // reset acceleration
                 acc_x = 0;
                 acc_y = 0;
-                    
             }
 
             for (int j = 0; j < N; j++) // for all particles update pos
@@ -123,9 +120,9 @@ int main(int argc, char *argv[])
         }
         FlushDisplay();
         CloseDisplay();
-    } 
+    }
     //********************** No Graphics Simulation ************************************************************
-    else 
+    else
     {
         for (int i = 0; i < nsteps; i++) // for all timesteps
         {
@@ -133,10 +130,9 @@ int main(int argc, char *argv[])
             {
 
                 p1 = particles[j]; // current particle
-
                 for (k = 0; k < j; k++) // calculations of acc for all particles before current particle
                 {
-                    
+
                     p2 = particles[k];
                     rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
                     acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
@@ -162,7 +158,6 @@ int main(int argc, char *argv[])
                 // reset acceleration
                 acc_x = 0;
                 acc_y = 0;
-                    
             }
 
             for (int j = 0; j < N; j++) // for all particles update pos
@@ -172,9 +167,7 @@ int main(int argc, char *argv[])
                 particles[j].y += particles[j].vy * delta_t;
             }
         }
-
     }
-
 
     // Write to binary file
     FILE *file_out;
@@ -187,10 +180,9 @@ int main(int argc, char *argv[])
         fwrite(&particles[i].vx, sizeof(double), 1, file_out);
         fwrite(&particles[i].vy, sizeof(double), 1, file_out);
         fwrite(&particles[i].brightness, sizeof(double), 1, file_out);
-
     }
     fclose(file_out);
-    
+
     // free memory
     free(particles);
 
