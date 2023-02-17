@@ -91,3 +91,6 @@ Time for simulation: 1.199055
 Time for writing file: 0.000000 
 Time for freeing memory: 0.000000 
 ./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  1.20s user 0.01s system 99% cpu 1.207 total
+
+tried rewriting original code with arrays and saving the acceleration, same as the struct one
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  1.59s user 0.01s system 99% cpu 1.597 total

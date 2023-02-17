@@ -31,9 +31,10 @@ int main(int argc, char *argv[])
     double *pos_and_mass = (double *)malloc(3 * N * sizeof(double)); // x, y, mass
     double *vel = (double *)malloc(2 * N * sizeof(double));          // vx, vy
     double *brightness = (double *)malloc(N * sizeof(double));       // brightness
-    double acc_x = 0, acc_y = 0;                                     // acceleration
+    double *acc = (double *)malloc(N * sizeof(double));                              // acceleration
     double rij, e0 = 0.001;
     double G = 100.0 / N; // gravitational constant
+    double acc_x, acc_y;
 
     // Read input data from file
     FILE *file = fopen(filename, "r");
@@ -69,18 +70,18 @@ int main(int argc, char *argv[])
                 {
                     // all particles before current particle
                     rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * kf]) * (pos_and_mass[3 * j] - pos_and_mass[3 * kf]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]));
-                    acc_x += pos_and_mass[3 * kf + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * kf]);
-                    acc_y += pos_and_mass[3 * kf + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]);
+                    //acc_x += pos_and_mass[3 * kf + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * kf]);
+                    //acc_y += pos_and_mass[3 * kf + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]);
                 }
                 for (int ka = j + 1; ka < N; ka++)
                 {
                     // all particles after current particle
                     rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * ka]) * (pos_and_mass[3 * j] - pos_and_mass[3 * ka]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]));
-                    acc_x += pos_and_mass[3 * ka + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * ka]);
-                    acc_y += pos_and_mass[3 * ka + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]);
+                   // acc_x += pos_and_mass[3 * ka + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * ka]);
+                   // acc_y += pos_and_mass[3 * ka + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]);
                 }
-                acc_x *= -G;
-                acc_y *= -G;
+                //acc_x *= -G;
+                //acc_y *= -G;
 
                 // update velocity
                 vel[2 * j] += acc_x * delta_t;
@@ -121,38 +122,32 @@ int main(int argc, char *argv[])
             for (int j = 0; j < N; j++) // for all particles update acc and vel
             {
 
-                // calc acceleration
-                for (int kf = 0; kf < j; kf++)
+                for (int k = j+1; k < N; k++) 
                 {
-                    // all particles before current particle
-                    rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * kf]) * (pos_and_mass[3 * j] - pos_and_mass[3 * kf]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]));
-                    acc_x += pos_and_mass[3 * kf + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * kf]);
-                    acc_y += pos_and_mass[3 * kf + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * kf + 1]);
+                    double rij = sqrt((pos_and_mass[3*j] - pos_and_mass[3 * k]) * (pos_and_mass[3*k] - pos_and_mass[3*j]) + (pos_and_mass[3*j+1] - pos_and_mass[3 * k+1]) * (pos_and_mass[3*k+1] - pos_and_mass[3*j+1]));
+                    //double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
+                    double Fx = (-G*(pos_and_mass[j] - pos_and_mass[k]))/((rij + e0) * (rij + e0) * (rij + e0));
+                    double Fy = (-G*(pos_and_mass[j+1] - pos_and_mass[k+1]))/((rij + e0) * (rij + e0) * (rij + e0));
+                    acc[2*j] += Fx * pos_and_mass[3*k +2];
+                    acc[2*j+1] += Fy * pos_and_mass[3*k +2];
+                    acc[2*k] += -Fx* pos_and_mass[3*j +2];
+                    acc[2*k+1] += -Fy* pos_and_mass[3*j +2];
                 }
-                for (int ka = j + 1; ka < N; ka++)
+
+                }
+                for (int j = 0; j < N; j++) // for all particles update pos and vel
                 {
-                    // all particles after current particle
-                    rij = sqrt((pos_and_mass[3 * j] - pos_and_mass[3 * ka]) * (pos_and_mass[3 * j] - pos_and_mass[3 * ka]) + (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]));
-                    acc_x += pos_and_mass[3 * ka + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j] - pos_and_mass[3 * ka]);
-                    acc_y += pos_and_mass[3 * ka + 2] / ((rij + e0) * (rij + e0) * (rij + e0)) * (pos_and_mass[3 * j + 1] - pos_and_mass[3 * ka + 1]);
+                    vel[2*j] += acc[2*j]*delta_t;
+                    vel[2*j+1] += acc[2*j+1]*delta_t;
+
+                    pos_and_mass[3*j] += vel[2*j]*delta_t;
+                    pos_and_mass[3*j+1] += vel[2*j+1]*delta_t;
+
+
+                    // reset acceleration
+                    acc[2*j] = 0;
+                    acc[2*j+1] = 0;
                 }
-                acc_x *= -G;
-                acc_y *= -G;
-
-                // update velocity
-                vel[2 * j] += acc_x * delta_t;
-                vel[2 * j + 1] += acc_y * delta_t;
-
-                // reset acceleration
-                acc_x = 0;
-                acc_y = 0;
-            }
-            for (int j = 0; j < N; j++) // for all particles update pos
-            {
-                // update position
-                pos_and_mass[3 * j] += vel[2 * j] * delta_t;
-                pos_and_mass[3 * j + 1] += vel[2 * j + 1] * delta_t;
-            }
         }
     }
 
