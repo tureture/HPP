@@ -25,7 +25,7 @@ struct Particle {
     double mass;
     double vx;
     double vy;
-    double brightness;
+    //double brightness;
 };
 
 
@@ -64,10 +64,11 @@ int main(int argc, char *argv[])
     
     // Allocate memory for N particles
     struct Particle *particles = (struct Particle *)malloc(N * sizeof(struct Particle));
+    double *brightness = (double *)malloc(N * sizeof(double));       // brightness
 
 
     double acc_x = 0, acc_y = 0;                                     // acceleration
-    double rij;
+    //double rij;
     const double e0 = 0.001;
     const double G = 100.0 / N; // gravitational constant
     int k;
@@ -88,59 +89,51 @@ for (int i = 0; i < N; i++)
     fread(&particles[i].mass, sizeof(double), 1, file);
     fread(&particles[i].vx, sizeof(double), 1, file);
     fread(&particles[i].vy, sizeof(double), 1, file);
-    fread(&particles[i].brightness, sizeof(double), 1, file);
+    fread(&brightness[i], sizeof(double), 1, file);
 }
 fclose(file);
-    fclose(file);
 
     double time3 = get_wall_seconds();
 
     // ***********************Do the simulation ***************************************
-    for (int i = 0; i < nsteps; i++){
-            for (int j = 0; j < N; j++) {
-            // pre-calculate particle j values
+
+    for (int i = 0; i < nsteps; i++) // for all timesteps
+    {
+        for (int j = 0; j < N; j++) // for all particles update acc and vel
+        {
             struct Particle p1 = particles[j];
-            double j_vx = p1.vx;
-            double j_vy = p1.vy;
-            double j_x = p1.x;
-            double j_y = p1.y;
-
-            for (int k = 0; k < N; k++) {
-                if (j == k) {
-                    continue;
+                // calc acceleration
+                for (k = 0; k < j; k++) // all particles before current particle
+                {
+                    struct Particle p2 = particles[k];
+                    double rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+                    double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
+                    acc_x += acc_k * (p1.x - p2.x);
+                    acc_y += acc_k * (p1.y - p2.y);
                 }
+                for (k = j + 1; k < N; k++) // all particles after current particle
+                {
+                    
+                    struct Particle p2 = particles[k];
+                    double rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+                    double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
+                    acc_x += acc_k * (p1.x - p2.x);
+                    acc_y += acc_k * (p1.y - p2.y);
+                }
+                acc_x *= -G;
+                acc_y *= -G;
 
-                // pre-calculate particle k values
-                struct Particle p2 = particles[k];
-                double dx = p1.x - p2.x;
-                double dy = p1.y - p2.y;
-                double rij = sqrt(dx * dx + dy * dy);
-                double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
-
-                j_vx += acc_k * dx;
-                j_vy += acc_k * dy;
-            }
-
-            j_vx *= -G;
-            j_vy *= -G;
-
-            // update velocity
-            j_x += j_vx * delta_t;
-            j_y += j_vy * delta_t;
-
-            // update position
-            j_x += j_vx * delta_t;
-            j_y += j_vy * delta_t;
-
-            // write back particle j values
-            particles[j].vx = j_vx;
-            particles[j].vy = j_vy;
-            particles[j].x = j_x;
-            particles[j].y = j_y;
-}
-
+                // update velocity
+                particles[j].vx += acc_x * delta_t;
+                particles[j].vy += acc_y * delta_t;
+                }
+                for (int j = 0; j < N; j++) // for all particles update pos
+                {
+                    // update position
+                    particles[j].x += particles[j].vx * delta_t;
+                    particles[j].y += particles[j].vy * delta_t;
+                }
     }
-
 
     double time4 = get_wall_seconds();
     
@@ -153,6 +146,7 @@ fclose(file);
     // free(pos_and_mass);
     //free(vel);
     //free(brightness);
+    free(particles);
 
     double time6 = get_wall_seconds();
 
