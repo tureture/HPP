@@ -94,3 +94,6 @@ Time for freeing memory: 0.000000
 
 tried rewriting original code with arrays and saving the acceleration, same as the struct one
 ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  1.59s user 0.01s system 99% cpu 1.597 total
+
+Using the struct rewritten one that saves the accelleration:
+./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  1.61s user 0.01s system 99% cpu 1.621 total
