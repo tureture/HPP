@@ -136,6 +136,21 @@ fclose(file);
     }
 
     double time4 = get_wall_seconds();
+
+    // Write to binary file
+    FILE *file_out;
+    file_out = fopen("result.gal", "w");
+    for (int i = 0; i < N; i++)
+    {
+        fwrite(&particles[i].x, sizeof(double), 1, file_out);
+        fwrite(&particles[i].y, sizeof(double), 1, file_out);
+        fwrite(&particles[i].mass, sizeof(double), 1, file_out);
+        fwrite(&particles[i].vx, sizeof(double), 1, file_out);
+        fwrite(&particles[i].vy, sizeof(double), 1, file_out);
+        fwrite(&brightness[i], sizeof(double), 1, file_out);
+
+    }
+    fclose(file_out);
     
 
 
