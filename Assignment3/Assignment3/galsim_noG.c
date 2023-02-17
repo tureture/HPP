@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-
 /*
 Assignment 3
 High Performance Computing
