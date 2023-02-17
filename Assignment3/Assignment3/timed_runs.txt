@@ -126,3 +126,6 @@ turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_
 ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.00s system 99% cpu 0.674 total
 turehassler@student-233-214 Assignment3 % time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0
 ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.67s user 0.01s system 99% cpu 0.676 total
+
+new record? 
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.64s user 0.00s system 99% cpu 0.646 total
