@@ -72,4 +72,22 @@ Time for writing file: 0.000000
 Time for freeing memory: 0.000000 
 ./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.03s user 0.00s system 95% cpu 0.035 total
 
-Can this really be correct???
+Can this really be correct??? It wasnt lol, missing one for loop
+
+Sample run using no if statement in inner for loop (not correct code tho):
+Total time: 0.653115 
+Time for parsing: 0.000002 
+Time for reading file: 0.001348 
+Time for simulation: 0.651765 
+Time for writing file: 0.000000 
+Time for freeing memory: 0.000000 
+./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  0.65s user 0.00s system 99% cpu 0.660 total
+
+Sample run using if statement in inner for loop (still not correct code, just for comparison):
+Total time: 1.200311 
+Time for parsing: 0.000004 
+Time for reading file: 0.001252 
+Time for simulation: 1.199055 
+Time for writing file: 0.000000 
+Time for freeing memory: 0.000000 
+./galsim_noG 3000 input_data/ellipse_N_03000.gal 100 0.00001 0  1.20s user 0.01s system 99% cpu 1.207 total

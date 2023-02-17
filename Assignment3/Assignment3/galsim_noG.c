@@ -96,47 +96,51 @@ fclose(file);
     double time3 = get_wall_seconds();
 
     // ***********************Do the simulation ***************************************
+    for (int i = 0; i < nsteps; i++){
+            for (int j = 0; j < N; j++) {
+            // pre-calculate particle j values
+            struct Particle p1 = particles[j];
+            double j_vx = p1.vx;
+            double j_vy = p1.vy;
+            double j_x = p1.x;
+            double j_y = p1.y;
 
-    for (int j = 0; j < N; j++) {
-    // pre-calculate particle j values
-    struct Particle p1 = particles[j];
-    double j_vx = p1.vx;
-    double j_vy = p1.vy;
-    double j_x = p1.x;
-    double j_y = p1.y;
+            for (int k = 0; k < N; k++) {
+                if (j == k) {
+                    continue;
+                }
 
-    for (int k = 0; k < N; k++) {
-        if (j == k) {
-            continue;
-        }
-        // pre-calculate particle k values
-        struct Particle p2 = particles[k];
-        double dx = p1.x - p2.x;
-        double dy = p1.y - p2.y;
-        double rij = sqrt(dx * dx + dy * dy);
-        double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
+                // pre-calculate particle k values
+                struct Particle p2 = particles[k];
+                double dx = p1.x - p2.x;
+                double dy = p1.y - p2.y;
+                double rij = sqrt(dx * dx + dy * dy);
+                double acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
 
-        j_vx += acc_k * dx;
-        j_vy += acc_k * dy;
+                j_vx += acc_k * dx;
+                j_vy += acc_k * dy;
+            }
+
+            j_vx *= -G;
+            j_vy *= -G;
+
+            // update velocity
+            j_x += j_vx * delta_t;
+            j_y += j_vy * delta_t;
+
+            // update position
+            j_x += j_vx * delta_t;
+            j_y += j_vy * delta_t;
+
+            // write back particle j values
+            particles[j].vx = j_vx;
+            particles[j].vy = j_vy;
+            particles[j].x = j_x;
+            particles[j].y = j_y;
+}
+
     }
 
-    j_vx *= -G;
-    j_vy *= -G;
-
-    // update velocity
-    j_x += j_vx * delta_t;
-    j_y += j_vy * delta_t;
-
-    // update position
-    j_x += j_vx * delta_t;
-    j_y += j_vy * delta_t;
-
-    // write back particle j values
-    particles[j].vx = j_vx;
-    particles[j].vy = j_vy;
-    particles[j].x = j_x;
-    particles[j].y = j_y;
-}
 
     double time4 = get_wall_seconds();
     
