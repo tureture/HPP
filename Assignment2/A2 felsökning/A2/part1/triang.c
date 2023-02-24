@@ -9,6 +9,13 @@ Ture Hassler & Jacob Malmenstedt
 void print_array(double *arr, int n);
 
 int main(int argc, char **argv) {
+
+    // check so we get correct number of inputs
+    if (argc != 2)
+    {
+        printf("Usage: ./triang \n");
+        return 1;
+    }
     
     double n = atoi(argv[1]); // read input from command line
     double product;
