@@ -1,0 +1,8 @@
+Assignment 3
+Anteckningar och feedback efter möte:
+
+Skapa en stor for loop, är fine eftersom den multiplicerar med noll. Bra för autovectorization
+
+Gå tillbaka till att ha separata arrayer istället för struct
+
+"Blocking". Med algoritmen där man uppdaterar krafterna hos båda partiklarna, fast bara för ett block
