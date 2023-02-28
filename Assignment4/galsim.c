@@ -16,8 +16,18 @@ int N;
 double delta_t;
 double e0 = 0.001;
 double G;
-
 struct Particle *particles;
+
+// Pthread stuff 
+int NUM_THREADS = 32;
+pthread_mutex_t lock;
+pthread_cond_t signal;
+int waiting = 0;
+int state = 0;
+
+
+
+
 
 
 // Define a struct for the particle
@@ -74,8 +84,39 @@ void* calc_forces(void* arg) {
         acc_x = 0;
         acc_y = 0;
     }
+
+    // Wait for all threads to reach the barrier
+    barrier(); // Is there any faster way to do this?
+
+    for (int j = lb; j<ub; j++) // update pos
+    {
+        // update position
+        particles[j].x += particles[j].vx * delta_t;
+        particles[j].y += particles[j].vy * delta_t;
+
+    }
+
+
+
+
  
   return NULL;
+}
+
+void barrier() {
+  int mystate; 
+  pthread_mutex_lock (&lock);
+  mystate=state;
+  waiting++;
+  if (waiting == NUM_THREADS) {
+    waiting = 0;
+    state = 1 - mystate;
+    pthread_cond_broadcast(&signal);
+  }
+  while (mystate == state) {
+    pthread_cond_wait(&signal, &lock);
+  }
+  pthread_mutex_unlock(&lock);
 }
 
 int main(int argc, char *argv[])
@@ -104,10 +145,12 @@ int main(int argc, char *argv[])
     int k;
     struct Particle p1, p2;             // particles
 
-    // Pthread stuff 
-    int NUM_THREADS = 32;
+    // Pthread stuff
     pthread_t threads[NUM_THREADS];
     struct Pthread_data* data = (struct Pthread_data*) malloc(NUM_THREADS * sizeof(struct Pthread_data));
+    pthread_cond_init(&signal, NULL);
+    pthread_mutex_init(&lock, NULL);
+
 
     // Read data from file and initialize particles with data
     FILE *file = fopen(filename, "r");
@@ -199,13 +242,6 @@ int main(int argc, char *argv[])
             {
                 pthread_join(threads[j], NULL);
             }
-
-            for (int j = 0; j < N; j++) // for all particles update pos
-            {
-                // update position
-                particles[j].x += particles[j].vx * delta_t;
-                particles[j].y += particles[j].vy * delta_t;
-            }
         }
     }
 
@@ -225,6 +261,11 @@ int main(int argc, char *argv[])
 
     // free memory
     free(particles);
+
+
+    // Cleanup
+    pthread_cond_destroy(&signal);
+    pthread_mutex_destroy(&lock);
 
     return 0;
 }

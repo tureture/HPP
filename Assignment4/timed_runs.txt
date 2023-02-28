@@ -25,3 +25,8 @@ Same as above but NUM_THREADS = 32, M2
 
 All these runs could probably be made faster if i didn't have a bunch of stuff open + external monitor
 Also higher variance compared to serialized code. Also have not parallelized update part yet.
+
+After adding barrier inside each thread. NUM_THREADS = 32. Looks faster? But could be just me doing less stuff on computer. M2
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  2.98s user 0.07s system 705% cpu 0.432 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.08s user 0.07s system 700% cpu 0.450 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.09s user 0.07s system 702% cpu 0.449 total
