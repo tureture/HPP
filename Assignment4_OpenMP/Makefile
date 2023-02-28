@@ -1,15 +1,18 @@
-CFLAGS=-Wall -O3 -ffast-math -fopenmp
+CFLAGS=-Wall -O3 -ffast-math 
 INCLUDES=-I/opt/X11/include
-LDFLAGS=-L/opt/X11/lib -lX11 -lm -fopenmp
+LDFLAGS=-L/opt/X11/lib -lX11 -lm 
+GCCVERSION=
+
+
 
 galsim: galsim.o graphics.o
-	gcc-12 -o galsim galsim.o graphics.o $(LDFLAGS)
+	gcc$(GCCVERSION) -o galsim galsim.o graphics.o $(LDFLAGS)
 
 galsim.o: galsim.c graphics/graphics.h
-	gcc-12 $(CFLAGS) $(INCLUDES) -c galsim.c
+	gcc$(GCCVERSION) $(CFLAGS) $(INCLUDES) -c galsim.c
 
 graphics.o: graphics/graphics.c graphics/graphics.h
-	gcc-12 $(CFLAGS) $(INCLUDES) -c graphics/graphics.c
+	gcc$(GCCVERSION) $(CFLAGS) $(INCLUDES) -c graphics/graphics.c
 
 clean:
 	rm -f ./galsim *.o
