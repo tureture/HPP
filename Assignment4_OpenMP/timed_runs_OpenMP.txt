@@ -3,3 +3,12 @@ Write the time measurments after different changes here:
 
 For easy copypaste access: 
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0
+
+Feb 28th:
+
+Original run, serial code using clang compiler. M2
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  1.82s user 0.00s system 99% cpu 1.829 total
+
+Original run, serial code using gcc-12 compiler. M2
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  2.93s user 0.01s system 99% cpu 2.940 total
+

@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
                 p1 = particles[j]; // current particle
 
-                #pragma omp parallel for num_threads(4)
+                
                 for (int k = 0; k < N; k++) // calculations of acc for all particles before current particle
                 {
                     p2 = particles[k];
@@ -122,17 +122,8 @@ int main(int argc, char *argv[])
             {
 
                 p1 = particles[j]; // current particle
-                for (k = 0; k < j; k++) // calculations of acc for all particles before current particle
-                {
 
-                    p2 = particles[k];
-                    rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-                    acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
-                    acc_x += acc_k * (p1.x - p2.x);
-                    acc_y += acc_k * (p1.y - p2.y);
-                }
-
-                for (k = j + 1; k < N; k++) // calc for all particles after current particle
+                for (k = 0; k < N; k++) // calculations of acc for all particles
                 {
                     p2 = particles[k];
                     rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
