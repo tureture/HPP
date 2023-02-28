@@ -21,7 +21,7 @@ struct Particle *particles;
 // Pthread stuff 
 int NUM_THREADS = 32;
 pthread_mutex_t lock;
-pthread_cond_t signal;
+pthread_cond_t mysignal;
 int waiting = 0;
 int state = 0;
 
@@ -47,6 +47,22 @@ struct Pthread_data
     int lowerB;
     int upperB;
 };
+
+void barrier() {
+  int mystate; 
+  pthread_mutex_lock (&lock);
+  mystate=state;
+  waiting++;
+  if (waiting == NUM_THREADS) {
+    waiting = 0;
+    state = 1 - mystate;
+    pthread_cond_broadcast(&mysignal);
+  }
+  while (mystate == state) {
+    pthread_cond_wait(&mysignal, &lock);
+  }
+  pthread_mutex_unlock(&lock);
+}
 
 void* calc_forces(void* arg) {
   /* Calc forces for one specific particle */
@@ -103,21 +119,7 @@ void* calc_forces(void* arg) {
   return NULL;
 }
 
-void barrier() {
-  int mystate; 
-  pthread_mutex_lock (&lock);
-  mystate=state;
-  waiting++;
-  if (waiting == NUM_THREADS) {
-    waiting = 0;
-    state = 1 - mystate;
-    pthread_cond_broadcast(&signal);
-  }
-  while (mystate == state) {
-    pthread_cond_wait(&signal, &lock);
-  }
-  pthread_mutex_unlock(&lock);
-}
+
 
 int main(int argc, char *argv[])
 {
@@ -148,7 +150,7 @@ int main(int argc, char *argv[])
     // Pthread stuff
     pthread_t threads[NUM_THREADS];
     struct Pthread_data* data = (struct Pthread_data*) malloc(NUM_THREADS * sizeof(struct Pthread_data));
-    pthread_cond_init(&signal, NULL);
+    pthread_cond_init(&mysignal, NULL);
     pthread_mutex_init(&lock, NULL);
 
 
@@ -264,7 +266,7 @@ int main(int argc, char *argv[])
 
 
     // Cleanup
-    pthread_cond_destroy(&signal);
+    pthread_cond_destroy(&mysignal);
     pthread_mutex_destroy(&lock);
 
     return 0;
