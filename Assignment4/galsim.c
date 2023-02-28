@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
     struct Particle p1, p2;             // particles
 
     // Pthread stuff 
-    int NUM_THREADS = 4;
+    int NUM_THREADS = 32;
     pthread_t threads[NUM_THREADS];
     struct Pthread_data* data = (struct Pthread_data*) malloc(NUM_THREADS * sizeof(struct Pthread_data));
 
