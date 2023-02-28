@@ -1,3 +1,3 @@
 # HPP
 
-Repo för kursen Högprestandaprogrammering, 2023
+Repo för kursen Högprestandaprogrammering, VT 2023
