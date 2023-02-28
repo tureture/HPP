@@ -3,5 +3,8 @@ Write the time measurments after different changes here:
 For easy copypaste access: 
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0
 
-No parallelization
+No parallelization, M2
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  1.78s user 0.01s system 99% cpu 1.784 total
+
+1 single thread for each Particle, M2. Still need to check if correct. Used around 4 cores and 25% cpu usage
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.99s user 33.98s system 176% cpu 21.525 total

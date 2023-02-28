@@ -3,12 +3,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 /*
-Assignment 3
+Assignment 4 - Parallelization with Pthreads
 High Performance Computing
 By Ture Hassler & Jacob Malmenstedt
 */
+
+// Global variables
+int N;
+double delta_t;
+double e0 = 0.001;
+double G;
+
+struct Particle *particles;
+
 
 // Define a struct for the particle
 struct Particle
@@ -21,6 +31,42 @@ struct Particle
     double brightness;
 };
 
+// Not used yet
+struct Pthread_data
+{
+    int j;
+};
+
+void* calc_forces(void* arg) {
+  /* Calc forces for one specific particle */
+    int j = (int) arg;
+
+    double acc_x = 0, acc_y = 0, acc_k; // acceleration
+    double rij;                         // distance between particles
+    struct Particle p1, p2;             // particles
+
+    
+
+    p1 = particles[j]; // current particle
+
+    for (int k = 0; k < N; k++) // calculations of acc for all particles before current particle
+    {
+        p2 = particles[k];
+        rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+        acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
+        acc_x += acc_k * (p1.x - p2.x);
+        acc_y += acc_k * (p1.y - p2.y);
+    }
+    acc_x *= -G;
+    acc_y *= -G;
+
+    // update velocity
+    particles[j].vx += acc_x * delta_t;
+    particles[j].vy += acc_y * delta_t;
+  
+  return NULL;
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -30,14 +76,14 @@ int main(int argc, char *argv[])
         printf("Usage: ./galsim N filename nsteps delta_t graphics\n");
         return 1;
     }
-    int N = atoi(argv[1]);
+    N = atoi(argv[1]);
     char *filename = argv[2];
     int nsteps = atoi(argv[3]);
     double delta_t = atof(argv[4]);
     int graphics = atoi(argv[5]);
 
     // Allocate memory for N particles
-    struct Particle *particles = (struct Particle *)malloc(N * sizeof(struct Particle));
+    particles = (struct Particle *)malloc(N * sizeof(struct Particle));
 
     // initialize variables inside for loops
     double acc_x = 0, acc_y = 0, acc_k; // acceleration
@@ -45,7 +91,10 @@ int main(int argc, char *argv[])
     const double e0 = 0.001;            // weird constant
     const double G = 100.0 / N;         // gravitational constant
     int k;
-    struct Particle p1, p2; // particles
+    struct Particle p1, p2;             // particles
+
+    // Pthread stuff 
+    pthread_t threads[N];
 
     // Read data from file and initialize particles with data
     FILE *file = fopen(filename, "r");
@@ -128,36 +177,12 @@ int main(int argc, char *argv[])
         {
             for (int j = 0; j < N; j++) // for all particles update acc and vel
             {
+                 pthread_create(&threads[j], NULL, calc_forces, (void *)j);
+            }
 
-                p1 = particles[j]; // current particle
-                for (k = 0; k < j; k++) // calculations of acc for all particles before current particle
-                {
-
-                    p2 = particles[k];
-                    rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-                    acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
-                    acc_x += acc_k * (p1.x - p2.x);
-                    acc_y += acc_k * (p1.y - p2.y);
-                }
-
-                for (k = j + 1; k < N; k++) // calc for all particles after current particle
-                {
-                    p2 = particles[k];
-                    rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-                    acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
-                    acc_x += acc_k * (p1.x - p2.x);
-                    acc_y += acc_k * (p1.y - p2.y);
-                }
-                acc_x *= -G;
-                acc_y *= -G;
-
-                // update velocity
-                particles[j].vx += acc_x * delta_t;
-                particles[j].vy += acc_y * delta_t;
-
-                // reset acceleration
-                acc_x = 0;
-                acc_y = 0;
+            for (int j = 0; j < N; j++) // for all particles update acc and vel
+            {
+                 pthread_join(threads[j], NULL);
             }
 
             for (int j = 0; j < N; j++) // for all particles update pos
