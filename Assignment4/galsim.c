@@ -31,39 +31,50 @@ struct Particle
     double brightness;
 };
 
-// Not used yet
+// Input data for pthreads
 struct Pthread_data
 {
-    int j;
+    int lowerB;
+    int upperB;
 };
 
 void* calc_forces(void* arg) {
   /* Calc forces for one specific particle */
-    int j = (int) arg;
+    struct Pthread_data *input = (struct Pthread_data*) arg;
+
+    int lb = input -> lowerB;
+    int ub = input -> upperB;
+
 
     double acc_x = 0, acc_y = 0, acc_k; // acceleration
     double rij;                         // distance between particles
     struct Particle p1, p2;             // particles
 
     
-
-    p1 = particles[j]; // current particle
-
-    for (int k = 0; k < N; k++) // calculations of acc for all particles before current particle
+    for (int j = lb; j<ub; j++) // calculations for all particles between lb and ub
     {
-        p2 = particles[k];
-        rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-        acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
-        acc_x += acc_k * (p1.x - p2.x);
-        acc_y += acc_k * (p1.y - p2.y);
-    }
-    acc_x *= -G;
-    acc_y *= -G;
+        p1 = particles[j]; // current particle
+    
+        for (int k = 0; k < N; k++) // calculations of acc for all particles before current particle
+        {
+            p2 = particles[k];
+            rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+            acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
+            acc_x += acc_k * (p1.x - p2.x);
+            acc_y += acc_k * (p1.y - p2.y);
+        }
+        acc_x *= -G;
+        acc_y *= -G;
+    
+        // update velocity
+        particles[j].vx += acc_x * delta_t;
+        particles[j].vy += acc_y * delta_t;
 
-    // update velocity
-    particles[j].vx += acc_x * delta_t;
-    particles[j].vy += acc_y * delta_t;
-  
+        // reset acceleration
+        acc_x = 0;
+        acc_y = 0;
+    }
+ 
   return NULL;
 }
 
@@ -94,7 +105,9 @@ int main(int argc, char *argv[])
     struct Particle p1, p2;             // particles
 
     // Pthread stuff 
-    pthread_t threads[N];
+    int NUM_THREADS = 4;
+    pthread_t threads[NUM_THREADS];
+    struct Pthread_data* data = (struct Pthread_data*) malloc(NUM_THREADS * sizeof(struct Pthread_data));
 
     // Read data from file and initialize particles with data
     FILE *file = fopen(filename, "r");
@@ -175,14 +188,16 @@ int main(int argc, char *argv[])
     {
         for (int i = 0; i < nsteps; i++) // for all timesteps
         {
-            for (int j = 0; j < N; j++) // for all particles update acc and vel
+            for (int j = 0; j < NUM_THREADS; j++) // create threads
             {
-                 pthread_create(&threads[j], NULL, calc_forces, (void *)j);
+                data[j].lowerB = j * (N / NUM_THREADS);
+                data[j].upperB = (j + 1) * (N / NUM_THREADS);
+                pthread_create(&threads[j], NULL, calc_forces, (void *)&data[j]);
             }
 
-            for (int j = 0; j < N; j++) // for all particles update acc and vel
+            for (int j = 0; j < NUM_THREADS; j++) // join threads 
             {
-                 pthread_join(threads[j], NULL);
+                pthread_join(threads[j], NULL);
             }
 
             for (int j = 0; j < N; j++) // for all particles update pos

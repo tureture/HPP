@@ -8,3 +8,6 @@ No parallelization, M2
 
 1 single thread for each Particle, M2. Still need to check if correct. Used around 4 cores and 25% cpu usage
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.99s user 33.98s system 176% cpu 21.525 total
+
+After letting each thread calc for N/4 particles. Using struct for input and particles. NUM_THREADS = 4. M2
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  2.51s user 0.01s system 390% cpu 0.645 total
