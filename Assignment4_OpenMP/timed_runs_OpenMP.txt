@@ -1,0 +1,5 @@
+For the OpenMP version of the code.
+Write the time measurments after different changes here:
+
+For easy copypaste access: 
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0

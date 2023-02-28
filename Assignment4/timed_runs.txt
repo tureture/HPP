@@ -1,3 +1,4 @@
+For the pthread version of the code.
 Write the time measurments after different changes here:
 
 For easy copypaste access: 
