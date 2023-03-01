@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-// #include <omp.h>
+#include <omp.h>
 
 /*
 Assignment 4 - OpenMP version of the code
@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
 {
 
     // Parse command line arguments and initialize input variables
-    if (argc != 6)
+    if (argc != 7)
     {
-        printf("Usage: ./galsim N filename nsteps delta_t graphics\n");
+        printf("Usage: ./galsim N filename nsteps delta_t graphics num_threads\n");
         return 1;
     }
     int N = atoi(argv[1]);
@@ -36,6 +36,10 @@ int main(int argc, char *argv[])
     int nsteps = atoi(argv[3]);
     double delta_t = atof(argv[4]);
     int graphics = atoi(argv[5]);
+    int nr_threads = atoi(argv[6]);
+
+    omp_set_num_threads(nr_threads);
+
 
     // Allocate memory for N particles
     struct Particle *particles = (struct Particle *)malloc(N * sizeof(struct Particle));
@@ -56,18 +60,24 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    int sum = 0;
     for (int i = 0; i < N; i++)
     {
-        fread(&particles[i].x, sizeof(double), 1, file);
-        fread(&particles[i].y, sizeof(double), 1, file);
-        fread(&particles[i].mass, sizeof(double), 1, file);
-        fread(&particles[i].vx, sizeof(double), 1, file);
-        fread(&particles[i].vy, sizeof(double), 1, file);
-        fread(&particles[i].brightness, sizeof(double), 1, file);
+        sum += fread(&particles[i].x, sizeof(double), 1, file);
+        sum += fread(&particles[i].y, sizeof(double), 1, file);
+        sum += fread(&particles[i].mass, sizeof(double), 1, file);
+        sum += fread(&particles[i].vx, sizeof(double), 1, file);
+        sum += fread(&particles[i].vy, sizeof(double), 1, file);
+        sum += fread(&particles[i].brightness, sizeof(double), 1, file);
     }
     fclose(file);
+    if (sum != 6 * N) // check if all data was read
+    {
+        printf("Error reading file\n");
+        return 1;
+    }
 
-    // ***********************Do the simulation ***************************************
+    // *********************** Simulation with graphics ***************************************
 
     // Initialize graphics, separate if else statement to avoid unnecessary calculations
     if (graphics)
@@ -118,9 +128,10 @@ int main(int argc, char *argv[])
     {
         for (int i = 0; i < nsteps; i++) // for all timesteps
         {
+            
+            #pragma omp parallel for private(p1, p2, rij, acc_k, acc_x, acc_y, k) schedule(static)
             for (int j = 0; j < N; j++) // for all particles update acc and vel
             {
-
                 p1 = particles[j]; // current particle
 
                 for (k = 0; k < N; k++) // calculations of acc for all particles
@@ -142,7 +153,11 @@ int main(int argc, char *argv[])
                 acc_x = 0;
                 acc_y = 0;
             }
+            #pragma omp barrier // wait for all threads to finish (maybe not necessary)
+            // the implied barrier should work but to force the same threads to continue I added this
 
+
+            #pragma omp parallel for schedule(static)
             for (int j = 0; j < N; j++) // for all particles update pos
             {
                 // update position
