@@ -2,7 +2,7 @@ For the OpenMP version of the code.
 Write the time measurments after different changes here:
 
 For easy copypaste access: 
-./galsim 3000 input_data/ellipse_N_03000.gal 100 0.0000 0
+./galsim 3000 input_data/ellipse_N_03000.gal 100 0.0000 0 4
 
  ./a.out 5000 ../ref_output_data/ellipse_N_05000_after100steps.gal ../result.gal
 
@@ -16,3 +16,99 @@ Original run, serial code using gcc-12 compiler. M2
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  2.93s user 0.01s system 99% cpu 2.940 total
 
 --------------------------------------------------------------------------------------------------------
+Mar 1st:
+i7-1165G7 (4threads if not specified)
+Run with first loop static (standard chunks) 2nd static
+real    0m0.951s
+user    0m3.776s
+sys     0m0.000s (sometimes sys != 0 probably because of threads waiting)
+
+Run with first loop dynamic (standard chunks) 2nd static
+real    0m0.799s
+user    0m3.178s
+sys     0m0.001s (not sure why this is not zero)
+
+Run with first loop guided (chunk=10) 2nd static
+real    0m0.891s
+user    0m3.533s
+sys     0m0.000s
+
+Run with first loop auto (standard chunks) 2nd static
+real    0m1.002s
+user    0m3.993s
+sys     0m0.001s
+
+Valgrind check:
+jako4104@LAPTOP-3G5HMM2A:~/HPP/Github/HPP/Assignment4_OpenMP$ valgrind --leak-check=full --show-leak-kinds=all -s  ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.0000 0 4
+==5278== Memcheck, a memory error detector
+==5278== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==5278== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==5278== Command: ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.0000 0 4
+==5278== 
+==5278== 
+==5278== HEAP SUMMARY:
+==5278==     in use at exit: 3,560 bytes in 8 blocks
+==5278==   total heap usage: 14 allocs, 6 frees, 189,512 bytes allocated
+==5278== 
+==5278== 8 bytes in 1 blocks are still reachable in loss record 1 of 6
+==5278==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5278==    by 0x49AD84C: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49C004A: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49ABFE1: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x400647D: call_init.part.0 (dl-init.c:70)
+==5278==    by 0x4006567: call_init (dl-init.c:33)
+==5278==    by 0x4006567: _dl_init (dl-init.c:117)
+==5278==    by 0x40202E9: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+==5278==    by 0x6: ???
+==5278==    by 0x1FFEFFFEB2: ???
+==5278==    by 0x1FFEFFFEBB: ???
+==5278==    by 0x1FFEFFFEC0: ???
+==5278==    by 0x1FFEFFFEDF: ???
+==5278== 
+==5278== 40 bytes in 1 blocks are still reachable in loss record 2 of 6
+==5278==    at 0x48487A9: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5278==    by 0x49AD8AC: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49BEACC: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49B4A10: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x10A7CB: main (galsim.c:132)
+==5278== 
+==5278== 192 bytes in 1 blocks are still reachable in loss record 3 of 6
+==5278==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5278==    by 0x49AD84C: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49BDD9B: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49B49F9: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x10A7CB: main (galsim.c:132)
+==5278== 
+==5278== 216 bytes in 1 blocks are still reachable in loss record 4 of 6
+==5278==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5278==    by 0x49AD84C: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49BF5EE: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49AE814: omp_set_num_threads (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x10A61A: main (galsim.c:41)
+==5278== 
+==5278== 864 bytes in 3 blocks are possibly lost in loss record 5 of 6
+==5278==    at 0x484DA83: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5278==    by 0x40147D9: calloc (rtld-malloc.h:44)
+==5278==    by 0x40147D9: allocate_dtv (dl-tls.c:375)
+==5278==    by 0x40147D9: _dl_allocate_tls (dl-tls.c:634)
+==5278==    by 0x4A7F834: allocate_stack (allocatestack.c:430)
+==5278==    by 0x4A7F834: pthread_create@@GLIBC_2.34 (pthread_create.c:647)
+==5278==    by 0x49BE1EF: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49B4A10: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x10A7CB: main (galsim.c:132)
+==5278== 
+==5278== 2,240 bytes in 1 blocks are still reachable in loss record 6 of 6
+==5278==    at 0x484E120: memalign (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5278==    by 0x49AD8E8: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49BDC26: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x49B49F9: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==5278==    by 0x10A7CB: main (galsim.c:132)
+==5278== 
+==5278== LEAK SUMMARY:
+==5278==    definitely lost: 0 bytes in 0 blocks
+==5278==    indirectly lost: 0 bytes in 0 blocks
+==5278==      possibly lost: 864 bytes in 3 blocks
+==5278==    still reachable: 2,696 bytes in 5 blocks
+==5278==         suppressed: 0 bytes in 0 blocks
+==5278== 
+==5278== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

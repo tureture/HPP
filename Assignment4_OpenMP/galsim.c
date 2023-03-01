@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < nsteps; i++) // for all timesteps
         {
             
-            #pragma omp parallel for private(p1, p2, rij, acc_k, acc_x, acc_y, k) schedule(static)
+            #pragma omp parallel for private(p1, p2, rij, acc_k, acc_x, acc_y, k) schedule(dynamic)
             for (int j = 0; j < N; j++) // for all particles update acc and vel
             {
                 p1 = particles[j]; // current particle
