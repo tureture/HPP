@@ -19,7 +19,7 @@ double e0 = 0.001;
 double G;
 struct Particle *particles;
 
-// Pthread stuff 
+// Pthread stuff
 int NUM_THREADS = 2;
 pthread_mutex_t lock;
 pthread_cond_t mysignal;
@@ -30,8 +30,6 @@ pthread_mutex_t lock_outer;
 pthread_cond_t mysignal_outer;
 int waiting_outer = 0;
 int state_outer = 0;
-
-
 
 // Define a struct for the particle
 struct Particle
@@ -53,57 +51,64 @@ struct Pthread_data
 };
 
 // Borrowed from Lab9/Task-4
-void barrier_inner() {
-  int mystate; 
-  pthread_mutex_lock (&lock);
-  mystate=state;
-  waiting++;
-  if (waiting == NUM_THREADS) {
-    waiting = 0;
-    state = 1 - mystate;
-    pthread_cond_broadcast(&mysignal);
-  }
-  while (mystate == state) {
-    pthread_cond_wait(&mysignal, &lock);
-  }
-  pthread_mutex_unlock(&lock);
+void barrier_inner()
+{
+    int mystate;
+    pthread_mutex_lock(&lock);
+    mystate = state;
+    waiting++;
+    if (waiting == NUM_THREADS)
+    {
+        waiting = 0;
+        state = 1 - mystate;
+        pthread_cond_broadcast(&mysignal);
+    }
+    while (mystate == state)
+    {
+        pthread_cond_wait(&mysignal, &lock);
+    }
+    pthread_mutex_unlock(&lock);
 }
 
 // Borrowed from Lab9/Task-4
-void barrier_outer() {
-  int mystate; 
-  pthread_mutex_lock (&lock_outer);
-  mystate=state_outer;
-  waiting_outer++;
-  if (waiting_outer == NUM_THREADS) {
-    waiting_outer = 0;
-    state_outer = 1 - mystate;
-    pthread_cond_broadcast(&mysignal_outer);
-  }
-  while (mystate == state_outer) {
-    pthread_cond_wait(&mysignal_outer, &lock_outer);
-  }
-  pthread_mutex_unlock(&lock_outer);
+void barrier_outer()
+{
+    int mystate;
+    pthread_mutex_lock(&lock_outer);
+    mystate = state_outer;
+    waiting_outer++;
+    if (waiting_outer == NUM_THREADS)
+    {
+        waiting_outer = 0;
+        state_outer = 1 - mystate;
+        pthread_cond_broadcast(&mysignal_outer);
+    }
+    while (mystate == state_outer)
+    {
+        pthread_cond_wait(&mysignal_outer, &lock_outer);
+    }
+    pthread_mutex_unlock(&lock_outer);
 }
 
-void* calc_forces(void* arg) {
-  /* Calc forces for one specific particle */
-    struct Pthread_data *input = (struct Pthread_data*) arg;
+void *calc_forces(void *arg)
+{
+    /* Calc forces for one specific particle */
+    struct Pthread_data *input = (struct Pthread_data *)arg;
 
-    int lb = input -> lowerB;
-    int ub = input -> upperB;
+    int lb = input->lowerB;
+    int ub = input->upperB;
 
     double acc_x = 0, acc_y = 0, acc_k; // acceleration
     double rij;                         // distance between particles
     struct Particle p1, p2;             // particles
 
-    printf("Thread %d: lb = %d, ub = %d \n", (int)pthread_self(), lb, ub);
+    // printf("Thread %d: lb = %d, ub = %d \n", (int)pthread_self(), lb, ub);
     for (int i = 0; i < nsteps; i++)
     {
-        for (int j = lb; j<ub; j++) // calculations for all particles between lb and ub
+        for (int j = lb; j < ub; j++) // calculations for all particles between lb and ub
         {
             p1 = particles[j]; // current particle
-        
+
             for (int k = 0; k < N; k++) // calculations of acc for all particles acting on current particle
             {
                 p2 = particles[k];
@@ -111,12 +116,10 @@ void* calc_forces(void* arg) {
                 acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
                 acc_x += acc_k * (p1.x - p2.x);
                 acc_y += acc_k * (p1.y - p2.y);
-
-                
             }
             acc_x *= -G;
             acc_y *= -G;
-        
+
             // update velocity
             particles[j].vx += acc_x * delta_t;
             particles[j].vy += acc_y * delta_t;
@@ -124,28 +127,23 @@ void* calc_forces(void* arg) {
             // reset acceleration
             acc_x = 0;
             acc_y = 0;
-
-            
-        } 
+        }
 
         // Wait for all threads to reach the barrier to sync before updating pos
-        barrier_inner(); // Is there any faster way to do this?
+        barrier_inner(); // Is there any better way to do this?
 
-        for (int j = lb; j<ub; j++) // update pos
+        for (int j = lb; j < ub; j++) // update pos
         {
             // update position
             particles[j].x += particles[j].vx * delta_t;
             particles[j].y += particles[j].vy * delta_t;
-
         }
 
         barrier_outer(); // Wait for all threads to reach the barrier to sync between timesteps
     }
 
-  return NULL;
+    return NULL;
 }
-
-
 
 int main(int argc, char *argv[])
 {
@@ -168,21 +166,20 @@ int main(int argc, char *argv[])
     // initialize variables inside for loops
     double acc_x = 0, acc_y = 0, acc_k; // acceleration
     double rij;                         // distance between particles
-    e0 = 0.001;            // weird constant
-    G = 100.0 / (double) N;         // gravitational constant
+    e0 = 0.001;                         // weird constant
+    G = 100.0 / (double)N;              // gravitational constant
     int k;
-    struct Particle p1, p2;             // particles
+    struct Particle p1, p2; // particles
 
     // Pthread stuff
     pthread_t threads[NUM_THREADS];
-    struct Pthread_data* data = (struct Pthread_data*) malloc((NUM_THREADS + 1) * sizeof(struct Pthread_data));
+    struct Pthread_data *data = (struct Pthread_data *)malloc((NUM_THREADS + 1) * sizeof(struct Pthread_data));
 
     pthread_cond_init(&mysignal, NULL);
     pthread_mutex_init(&lock, NULL);
 
     pthread_cond_init(&mysignal_outer, NULL);
     pthread_mutex_init(&lock_outer, NULL);
-
 
     // Read data from file and initialize particles with data
     FILE *file = fopen(filename, "r");
@@ -195,7 +192,7 @@ int main(int argc, char *argv[])
     int sum = 0;
     for (int i = 0; i < N; i++)
     {
-        
+
         sum += fread(&particles[i].x, sizeof(double), 1, file);
         sum += fread(&particles[i].y, sizeof(double), 1, file);
         sum += fread(&particles[i].mass, sizeof(double), 1, file);
@@ -204,15 +201,15 @@ int main(int argc, char *argv[])
         sum += fread(&particles[i].brightness, sizeof(double), 1, file);
     }
     fclose(file);
-    if (sum != 6 * N)
+    if (sum != 6 * N) // check if all data was read
     {
         printf("Error reading file\n");
         return 1;
     }
 
-    // ***********************Do the simulation ***************************************
+    // *********************** Simulation with graphics ***************************************
 
-    // Initialize graphics, separate if else statement to avoid unnecessary calculations. Note this part is not parallelized! 
+    // Initialize graphics, separate if else statement to avoid unnecessary calculations. Note this part is not parallelized!
     if (graphics)
     {
         InitializeGraphics("Galaxy Simulation", 800, 800);
@@ -265,7 +262,7 @@ int main(int argc, char *argv[])
         FlushDisplay();
         CloseDisplay();
     }
-    //********************** No Graphics Simulation ************************************************************
+    //********************** No Graphics Simulation *******************************************
     else
     {
 
@@ -273,14 +270,16 @@ int main(int argc, char *argv[])
         int tasks_per_thread = N / NUM_THREADS;
         int tmp = 0;
 
-
-        for (int j = 0; j < NUM_THREADS; j++) // create threads
-        {   
-            if (j < remainder){
+        for (int j = 0; j < NUM_THREADS; j++) // create threads and distribute work evenly
+        {
+            if (j < remainder)
+            {
                 data[j].lowerB = tmp;
                 tmp += tasks_per_thread + 1;
                 data[j].upperB = tmp;
-            } else {
+            }
+            else
+            {
                 data[j].lowerB = tmp;
                 tmp += tasks_per_thread;
                 data[j].upperB = tmp;
@@ -288,14 +287,10 @@ int main(int argc, char *argv[])
             pthread_create(&threads[j], NULL, calc_forces, (void *)&data[j]);
         }
 
-
-
-
-        for (int j = 0; j < NUM_THREADS; j++) // join threads 
+        for (int j = 0; j < NUM_THREADS; j++) // join threads
         {
             pthread_join(threads[j], NULL);
         }
-        
     }
 
     // Write to binary file
@@ -315,7 +310,6 @@ int main(int argc, char *argv[])
 
     // free memory
     free(particles);
-
 
     // Cleanup
     pthread_cond_destroy(&mysignal);
