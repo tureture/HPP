@@ -27,9 +27,6 @@ int state = 0;
 
 
 
-
-
-
 // Define a struct for the particle
 struct Particle
 {
@@ -48,6 +45,7 @@ struct Pthread_data
     int upperB;
 };
 
+// Borrowed from Lab9/Task-4
 void barrier() {
   int mystate; 
   pthread_mutex_lock (&lock);
@@ -112,10 +110,6 @@ void* calc_forces(void* arg) {
 
     }
 
-
-
-
- 
   return NULL;
 }
 
@@ -175,7 +169,7 @@ int main(int argc, char *argv[])
 
     // ***********************Do the simulation ***************************************
 
-    // Initialize graphics, separate if else statement to avoid unnecessary calculations
+    // Initialize graphics, separate if else statement to avoid unnecessary calculations. Note this part is not parallelized! 
     if (graphics)
     {
         InitializeGraphics("Galaxy Simulation", 800, 800);
