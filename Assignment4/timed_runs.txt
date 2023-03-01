@@ -3,7 +3,7 @@ Write the time measurments after different changes here:
 
 For easy copypaste access: 
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0
-./a.out 5000 ../ref_output_data/ellipse_N_05000_after100steps.gal ../result.gal
+./a.out 3000 ../ref_output_data/ellipse_N_03000_after100steps.gal ../result.gal
 
 --------------------------------------------------------------------------------------------------------
 

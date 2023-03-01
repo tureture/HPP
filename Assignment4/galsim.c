@@ -42,6 +42,7 @@ struct Particle
     double vx;
     double vy;
     double brightness;
+    double megasum;
 };
 
 // Input data for pthreads
@@ -92,8 +93,6 @@ void* calc_forces(void* arg) {
     int lb = input -> lowerB;
     int ub = input -> upperB;
 
-
-
     double acc_x = 0, acc_y = 0, acc_k; // acceleration
     double rij;                         // distance between particles
     struct Particle p1, p2;             // particles
@@ -111,6 +110,8 @@ void* calc_forces(void* arg) {
                 acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
                 acc_x += acc_k * (p1.x - p2.x);
                 acc_y += acc_k * (p1.y - p2.y);
+
+                
             }
             acc_x *= -G;
             acc_y *= -G;
@@ -166,8 +167,8 @@ int main(int argc, char *argv[])
     // initialize variables inside for loops
     double acc_x = 0, acc_y = 0, acc_k; // acceleration
     double rij;                         // distance between particles
-    const double e0 = 0.001;            // weird constant
-    const double G = 100.0 / N;         // gravitational constant
+    e0 = 0.001;            // weird constant
+    G = 100.0 / (double) N;         // gravitational constant
     int k;
     struct Particle p1, p2;             // particles
 
@@ -294,6 +295,7 @@ int main(int argc, char *argv[])
     file_out = fopen("result.gal", "w");
     for (int i = 0; i < N; i++)
     {
+        // printf("%f %f %f %f %f %f \n", particles[i].x, particles[i].y, particles[i].mass, particles[i].vx, particles[i].vy, particles[i].brightness);
         fwrite(&particles[i].x, sizeof(double), 1, file_out);
         fwrite(&particles[i].y, sizeof(double), 1, file_out);
         fwrite(&particles[i].mass, sizeof(double), 1, file_out);
