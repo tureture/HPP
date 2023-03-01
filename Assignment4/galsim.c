@@ -260,17 +260,26 @@ int main(int argc, char *argv[])
     else
     {
 
-        for (int j = 0; j < NUM_THREADS - 1; j++) // create threads
-        {
-            data[j].lowerB = j * (N / (NUM_THREADS - 1));
-            data[j].upperB = (j + 1) * (N / (NUM_THREADS - 1));
+        int remainder = N % NUM_THREADS;
+        int tasks_per_thread = N / NUM_THREADS;
+        int tmp = 0;
+
+
+        for (int j = 0; j < NUM_THREADS; j++) // create threads
+        {   
+            if (j <= remainder){
+                data[j].lowerB = tmp;
+                tmp += tasks_per_thread + 1;
+                data[j].upperB = tmp;
+            } else {
+                data[j].lowerB = tmp;
+                tmp += tasks_per_thread;
+                data[j].upperB = tmp;
+            }
             pthread_create(&threads[j], NULL, calc_forces, (void *)&data[j]);
         }
 
-        // deal with remainder. not sure if this is gonna fix it
-        data[NUM_THREADS + 1].lowerB = NUM_THREADS * (N / NUM_THREADS);
-        data[NUM_THREADS + 1].upperB = N;
-        pthread_create(&threads[NUM_THREADS], NULL, calc_forces, (void *)&data[NUM_THREADS]);
+
 
 
         for (int j = 0; j < NUM_THREADS; j++) // join threads 
