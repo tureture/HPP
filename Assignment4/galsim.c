@@ -20,7 +20,7 @@ double G;
 struct Particle *particles;
 
 // Pthread stuff 
-int NUM_THREADS = 31;
+int NUM_THREADS = 2;
 pthread_mutex_t lock;
 pthread_cond_t mysignal;
 int waiting = 0;
@@ -98,13 +98,14 @@ void* calc_forces(void* arg) {
     double rij;                         // distance between particles
     struct Particle p1, p2;             // particles
 
+    printf("Thread %d: lb = %d, ub = %d \n", (int)pthread_self(), lb, ub);
     for (int i = 0; i < nsteps; i++)
     {
         for (int j = lb; j<ub; j++) // calculations for all particles between lb and ub
         {
             p1 = particles[j]; // current particle
         
-            for (int k = 0; k < N; k++) // calculations of acc for all particles before current particle
+            for (int k = 0; k < N; k++) // calculations of acc for all particles acting on current particle
             {
                 p2 = particles[k];
                 rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
@@ -190,16 +191,23 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    int sum = 0;
     for (int i = 0; i < N; i++)
     {
-        fread(&particles[i].x, sizeof(double), 1, file);
-        fread(&particles[i].y, sizeof(double), 1, file);
-        fread(&particles[i].mass, sizeof(double), 1, file);
-        fread(&particles[i].vx, sizeof(double), 1, file);
-        fread(&particles[i].vy, sizeof(double), 1, file);
-        fread(&particles[i].brightness, sizeof(double), 1, file);
+        
+        sum += fread(&particles[i].x, sizeof(double), 1, file);
+        sum += fread(&particles[i].y, sizeof(double), 1, file);
+        sum += fread(&particles[i].mass, sizeof(double), 1, file);
+        sum += fread(&particles[i].vx, sizeof(double), 1, file);
+        sum += fread(&particles[i].vy, sizeof(double), 1, file);
+        sum += fread(&particles[i].brightness, sizeof(double), 1, file);
     }
     fclose(file);
+    if (sum != 6 * N)
+    {
+        printf("Error reading file\n");
+        return 1;
+    }
 
     // ***********************Do the simulation ***************************************
 
@@ -267,7 +275,7 @@ int main(int argc, char *argv[])
 
         for (int j = 0; j < NUM_THREADS; j++) // create threads
         {   
-            if (j <= remainder){
+            if (j < remainder){
                 data[j].lowerB = tmp;
                 tmp += tasks_per_thread + 1;
                 data[j].upperB = tmp;
