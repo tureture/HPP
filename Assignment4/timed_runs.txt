@@ -7,6 +7,7 @@ For easy copypaste access:
 No parallelization, M2
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  1.78s user 0.01s system 99% cpu 1.784 total
 
+--------------------------------------------------------------------------------------------------------
 Feb 28th:
 
 1 single thread for each Particle, M2. Still need to check if correct. Used around 4 cores and 25% cpu usage
@@ -31,3 +32,17 @@ After adding barrier inside each thread. NUM_THREADS = 32. Looks faster? But cou
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  2.98s user 0.07s system 705% cpu 0.432 total
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.08s user 0.07s system 700% cpu 0.450 total
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.09s user 0.07s system 702% cpu 0.449 total
+
+--------------------------------------------------------------------------------------------------------
+March 1:
+
+After adding barrier inside each thread. NUM_THREADS = 32. Ran it again today for comparison. M2
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.06s user 0.13s system 697% cpu 0.457 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  2.99s user 0.15s system 655% cpu 0.479 total
+
+After changing to creating threads once, and having a barrier between each timestep. Hard to tell if faster or no difference?
+Still need to check corectness. M2
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.02s user 0.12s system 690% cpu 0.455 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  2.94s user 0.15s system 617% cpu 0.500 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.06s user 0.11s system 707% cpu 0.448 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.07s user 0.12s system 714% cpu 0.446 total

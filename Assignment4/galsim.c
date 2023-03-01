@@ -13,6 +13,7 @@ By Ture Hassler & Jacob Malmenstedt
 
 // Global variables
 int N;
+int nsteps;
 double delta_t;
 double e0 = 0.001;
 double G;
@@ -24,6 +25,11 @@ pthread_mutex_t lock;
 pthread_cond_t mysignal;
 int waiting = 0;
 int state = 0;
+
+pthread_mutex_t lock_outer;
+pthread_cond_t mysignal_outer;
+int waiting_outer = 0;
+int state_outer = 0;
 
 
 
@@ -46,7 +52,7 @@ struct Pthread_data
 };
 
 // Borrowed from Lab9/Task-4
-void barrier() {
+void barrier_inner() {
   int mystate; 
   pthread_mutex_lock (&lock);
   mystate=state;
@@ -62,6 +68,23 @@ void barrier() {
   pthread_mutex_unlock(&lock);
 }
 
+// Borrowed from Lab9/Task-4
+void barrier_outer() {
+  int mystate; 
+  pthread_mutex_lock (&lock_outer);
+  mystate=state_outer;
+  waiting_outer++;
+  if (waiting_outer == NUM_THREADS) {
+    waiting_outer = 0;
+    state_outer = 1 - mystate;
+    pthread_cond_broadcast(&mysignal_outer);
+  }
+  while (mystate == state_outer) {
+    pthread_cond_wait(&mysignal_outer, &lock_outer);
+  }
+  pthread_mutex_unlock(&lock_outer);
+}
+
 void* calc_forces(void* arg) {
   /* Calc forces for one specific particle */
     struct Pthread_data *input = (struct Pthread_data*) arg;
@@ -70,44 +93,51 @@ void* calc_forces(void* arg) {
     int ub = input -> upperB;
 
 
+
     double acc_x = 0, acc_y = 0, acc_k; // acceleration
     double rij;                         // distance between particles
     struct Particle p1, p2;             // particles
 
-    
-    for (int j = lb; j<ub; j++) // calculations for all particles between lb and ub
+    for (int i = 0; i < nsteps; i++)
     {
-        p1 = particles[j]; // current particle
-    
-        for (int k = 0; k < N; k++) // calculations of acc for all particles before current particle
+        for (int j = lb; j<ub; j++) // calculations for all particles between lb and ub
         {
-            p2 = particles[k];
-            rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-            acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
-            acc_x += acc_k * (p1.x - p2.x);
-            acc_y += acc_k * (p1.y - p2.y);
+            p1 = particles[j]; // current particle
+        
+            for (int k = 0; k < N; k++) // calculations of acc for all particles before current particle
+            {
+                p2 = particles[k];
+                rij = sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+                acc_k = p2.mass / ((rij + e0) * (rij + e0) * (rij + e0));
+                acc_x += acc_k * (p1.x - p2.x);
+                acc_y += acc_k * (p1.y - p2.y);
+            }
+            acc_x *= -G;
+            acc_y *= -G;
+        
+            // update velocity
+            particles[j].vx += acc_x * delta_t;
+            particles[j].vy += acc_y * delta_t;
+
+            // reset acceleration
+            acc_x = 0;
+            acc_y = 0;
+
+            
+        } 
+
+        // Wait for all threads to reach the barrier to sync before updating pos
+        barrier_inner(); // Is there any faster way to do this?
+
+        for (int j = lb; j<ub; j++) // update pos
+        {
+            // update position
+            particles[j].x += particles[j].vx * delta_t;
+            particles[j].y += particles[j].vy * delta_t;
+
         }
-        acc_x *= -G;
-        acc_y *= -G;
-    
-        // update velocity
-        particles[j].vx += acc_x * delta_t;
-        particles[j].vy += acc_y * delta_t;
 
-        // reset acceleration
-        acc_x = 0;
-        acc_y = 0;
-    }
-
-    // Wait for all threads to reach the barrier
-    barrier(); // Is there any faster way to do this?
-
-    for (int j = lb; j<ub; j++) // update pos
-    {
-        // update position
-        particles[j].x += particles[j].vx * delta_t;
-        particles[j].y += particles[j].vy * delta_t;
-
+        barrier_outer(); // Wait for all threads to reach the barrier to sync between timesteps
     }
 
   return NULL;
@@ -126,8 +156,8 @@ int main(int argc, char *argv[])
     }
     N = atoi(argv[1]);
     char *filename = argv[2];
-    int nsteps = atoi(argv[3]);
-    double delta_t = atof(argv[4]);
+    nsteps = atoi(argv[3]);
+    delta_t = atof(argv[4]);
     int graphics = atoi(argv[5]);
 
     // Allocate memory for N particles
@@ -144,8 +174,12 @@ int main(int argc, char *argv[])
     // Pthread stuff
     pthread_t threads[NUM_THREADS];
     struct Pthread_data* data = (struct Pthread_data*) malloc(NUM_THREADS * sizeof(struct Pthread_data));
+
     pthread_cond_init(&mysignal, NULL);
     pthread_mutex_init(&lock, NULL);
+
+    pthread_cond_init(&mysignal_outer, NULL);
+    pthread_mutex_init(&lock_outer, NULL);
 
 
     // Read data from file and initialize particles with data
@@ -225,20 +259,19 @@ int main(int argc, char *argv[])
     //********************** No Graphics Simulation ************************************************************
     else
     {
-        for (int i = 0; i < nsteps; i++) // for all timesteps
-        {
-            for (int j = 0; j < NUM_THREADS; j++) // create threads
-            {
-                data[j].lowerB = j * (N / NUM_THREADS);
-                data[j].upperB = (j + 1) * (N / NUM_THREADS);
-                pthread_create(&threads[j], NULL, calc_forces, (void *)&data[j]);
-            }
 
-            for (int j = 0; j < NUM_THREADS; j++) // join threads 
-            {
-                pthread_join(threads[j], NULL);
-            }
+        for (int j = 0; j < NUM_THREADS; j++) // create threads
+        {
+            data[j].lowerB = j * (N / NUM_THREADS);
+            data[j].upperB = (j + 1) * (N / NUM_THREADS);
+            pthread_create(&threads[j], NULL, calc_forces, (void *)&data[j]);
         }
+
+        for (int j = 0; j < NUM_THREADS; j++) // join threads 
+        {
+            pthread_join(threads[j], NULL);
+        }
+        
     }
 
     // Write to binary file
@@ -262,6 +295,9 @@ int main(int argc, char *argv[])
     // Cleanup
     pthread_cond_destroy(&mysignal);
     pthread_mutex_destroy(&lock);
+
+    pthread_cond_destroy(&mysignal_outer);
+    pthread_mutex_destroy(&lock_outer);
 
     return 0;
 }
