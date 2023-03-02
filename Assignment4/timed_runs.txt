@@ -2,7 +2,7 @@ For the pthread version of the code.
 Write the time measurments after different changes here:
 
 For easy copypaste access: 
-./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8
 ./a.out 3000 ../ref_output_data/ellipse_N_03000_after100steps.gal ../result.gal
 
 --------------------------------------------------------------------------------------------------------
