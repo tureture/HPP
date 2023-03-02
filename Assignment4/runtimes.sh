@@ -9,7 +9,7 @@ do
         echo "N = $T"
         time ./galsim 1000 input_data/ellipse_N_01000.gal 100 0.00001 0 $T
 done
-for T in $(seq  48 64 128)
+for T in $(seq  48 12 128)
 do
         echo "N = $T"
         time ./galsim 1000 input_data/ellipse_N_01000.gal 100 0.00001 0 $T

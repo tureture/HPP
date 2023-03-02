@@ -265,132 +265,106 @@ sys     0m0.410s
 
 When changing the number of threads N=1000, nsteps=100, pthreads version. M2
 T = 1
-
 real    0m0.140s
 user    0m0.134s
 sys     0m0.003s
 T = 2
-
 real    0m0.064s
 user    0m0.122s
 sys     0m0.002s
 T = 3
-
 real    0m0.046s
 user    0m0.127s
 sys     0m0.002s
 T = 4
-
 real    0m0.038s
 user    0m0.129s
 sys     0m0.003s
 T = 5
-
 real    0m0.048s
 user    0m0.146s
 sys     0m0.005s
 T = 6
-
 real    0m0.042s
 user    0m0.154s
 sys     0m0.007s
 T = 7
-
 real    0m0.039s
 user    0m0.159s
 sys     0m0.009s
 T = 8
-
 real    0m0.037s
 user    0m0.165s
 sys     0m0.012s
 T = 9
-
 real    0m0.041s
 user    0m0.163s
 sys     0m0.012s
 T = 10
-
 real    0m0.039s
 user    0m0.162s
 sys     0m0.013s
 T = 11
-
 real    0m0.038s
 user    0m0.161s
 sys     0m0.014s
 T = 12
-
 real    0m0.035s
 user    0m0.175s
 sys     0m0.016s
 T = 13
-
 real    0m0.038s
 user    0m0.176s
 sys     0m0.017s
 T = 14
-
 real    0m0.038s
 user    0m0.164s
 sys     0m0.017s
 T = 15
-
 real    0m0.039s
 user    0m0.144s
 sys     0m0.014s
 T = 16
-
 real    0m0.038s
 user    0m0.149s
 sys     0m0.019s
 N = 18
-
 real    0m0.041s
 user    0m0.131s
 sys     0m0.014s
 N = 20
-
 real    0m0.039s
 user    0m0.157s
 sys     0m0.028s
 N = 22
-
 real    0m0.041s
 user    0m0.145s
 sys     0m0.024s
 N = 24
-
 real    0m0.041s
 user    0m0.166s
 sys     0m0.043s
 N = 26
-
 real    0m0.042s
 user    0m0.139s
 sys     0m0.027s
 N = 28
-
 real    0m0.045s
 user    0m0.166s
 sys     0m0.048s
 N = 30
-
 real    0m0.045s
 user    0m0.132s
 sys     0m0.030s
 N = 32
-
 real    0m0.043s
 user    0m0.139s
 sys     0m0.038s
 N = 48
-
 real    0m0.047s
 user    0m0.135s
 sys     0m0.046s
 N = 112
-
 real    0m0.067s
 user    0m0.136s
 sys     0m0.119s
