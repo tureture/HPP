@@ -49,3 +49,26 @@ Still need to check corectness. M2
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  2.94s user 0.15s system 617% cpu 0.500 total
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.06s user 0.11s system 707% cpu 0.448 total
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0  3.07s user 0.12s system 714% cpu 0.446 total
+
+March 2:
+
+Pthreads and using the barrier. Using clang
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  3.03s user 0.04s system 730% cpu 0.421 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  3.12s user 0.04s system 718% cpu 0.440 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  3.14s user 0.04s system 730% cpu 0.436 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  3.10s user 0.04s system 685% cpu 0.458 total
+
+Pthreads and using the barrier. Using gcc-12
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  4.50s user 0.05s system 705% cpu 0.645 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  4.45s user 0.05s system 666% cpu 0.675 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  4.42s user 0.04s system 704% cpu 0.634 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  4.49s user 0.05s system 692% cpu 0.655 total
+
+Pthreads and using the barrier. Usign gcc-12. Now 10x more steps.
+./galsim 5000 input_data/ellipse_N_05000.gal 1000 0.00001 0 16  44.10s user 0.40s system 715% cpu 6.223 total
+./galsim 5000 input_data/ellipse_N_05000.gal 1000 0.00001 0 16  44.06s user 0.41s system 716% cpu 6.211 total
+
+Pthreads and using the barrier. Usign clang. Now 10x more steps. Clang consistently better for me.
+./galsim 5000 input_data/ellipse_N_05000.gal 1000 0.00001 0 16  30.45s user 0.32s system 741% cpu 4.152 total
+./galsim 5000 input_data/ellipse_N_05000.gal 1000 0.00001 0 16  30.50s user 0.32s system 704% cpu 4.376 total
+./galsim 5000 input_data/ellipse_N_05000.gal 1000 0.00001 0 16  30.44s user 0.33s system 729% cpu 4.220 total
