@@ -20,7 +20,7 @@ double G;
 struct Particle *particles;
 
 // Pthread stuff
-int NUM_THREADS = 2;
+int NUM_THREADS;
 pthread_mutex_t lock;
 pthread_cond_t mysignal;
 int waiting = 0;
@@ -149,16 +149,18 @@ int main(int argc, char *argv[])
 {
 
     // Parse command line arguments and initialize input variables
-    if (argc != 6)
+    if (argc != 7)
     {
-        printf("Usage: ./galsim N filename nsteps delta_t graphics\n");
+        printf("Usage: ./galsim N filename nsteps delta_t graphics num_threads\n");
         return 1;
     }
+
     N = atoi(argv[1]);
     char *filename = argv[2];
     nsteps = atoi(argv[3]);
     delta_t = atof(argv[4]);
     int graphics = atoi(argv[5]);
+    NUM_THREADS = atoi(argv[6]);
 
     // Allocate memory for N particles
     particles = (struct Particle *)malloc(N * sizeof(struct Particle));
@@ -266,6 +268,7 @@ int main(int argc, char *argv[])
     else
     {
 
+        // Distribute work evenly between threads
         int remainder = N % NUM_THREADS;
         int tasks_per_thread = N / NUM_THREADS;
         int tmp = 0;
