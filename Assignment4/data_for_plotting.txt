@@ -620,3 +620,129 @@ N = 120
 real    0m0.059s
 user    0m0.090s
 sys     0m0.138s
+
+OpenMP version. All of these are with clang due to incompatability. Using schedule dynamic for inner loop and schedule static for update.
+T = 1
+real    0m0.306s
+user    0m0.143s
+sys     0m0.005s
+T = 2
+real    0m0.067s
+user    0m0.127s
+sys     0m0.003s
+T = 3
+real    0m0.048s
+user    0m0.131s
+sys     0m0.004s
+T = 4
+real    0m0.039s
+user    0m0.133s
+sys     0m0.005s
+T = 5
+real    0m0.040s
+user    0m0.155s
+sys     0m0.008s
+T = 6
+real    0m0.038s
+user    0m0.170s
+sys     0m0.011s
+T = 7
+real    0m0.038s
+user    0m0.185s
+sys     0m0.014s
+T = 8
+real    0m0.038s
+user    0m0.188s
+sys     0m0.018s
+T = 9
+real    0m0.038s
+user    0m0.191s
+sys     0m0.020s
+T = 10
+real    0m0.039s
+user    0m0.192s
+sys     0m0.023s
+T = 11
+real    0m0.040s
+user    0m0.194s
+sys     0m0.026s
+T = 12
+real    0m0.040s
+user    0m0.196s
+sys     0m0.028s
+T = 13
+real    0m0.047s
+user    0m0.206s
+sys     0m0.033s
+T = 14
+real    0m0.043s
+user    0m0.197s
+sys     0m0.034s
+T = 15
+real    0m0.044s
+user    0m0.196s
+sys     0m0.036s
+T = 16
+real    0m0.044s
+user    0m0.197s
+sys     0m0.038s
+T = 18
+real    0m0.046s
+user    0m0.199s
+sys     0m0.046s
+T = 20
+real    0m0.048s
+user    0m0.199s
+sys     0m0.052s
+T = 22
+real    0m0.048s
+user    0m0.202s
+sys     0m0.055s
+T = 24
+real    0m0.050s
+user    0m0.203s
+sys     0m0.060s
+T = 26
+real    0m0.054s
+user    0m0.204s
+sys     0m0.068s
+T = 28
+real    0m0.054s
+user    0m0.204s
+sys     0m0.076s
+T = 30
+real    0m0.055s
+user    0m0.206s
+sys     0m0.081s
+T = 32
+real    0m0.055s
+user    0m0.205s
+sys     0m0.086s
+T = 48
+real    0m0.067s
+user    0m0.210s
+sys     0m0.131s
+T = 60
+real    0m0.074s
+user    0m0.216s
+sys     0m0.164s
+T = 72
+real    0m0.082s
+user    0m0.219s
+sys     0m0.202s
+T = 84
+real    0m0.091s
+user    0m0.219s
+sys     0m0.241s
+T = 96
+real    0m0.101s
+user    0m0.221s
+sys     0m0.279s
+T = 108
+real    0m0.110s
+user    0m0.228s
+sys     0m0.325s
+T = 120
+real    0m0.125s
+user    0m0.234s
+sys     0m0.349s

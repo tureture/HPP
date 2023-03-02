@@ -1,7 +1,7 @@
 CFLAGS=-Wall -O3 -ffast-math -fopenmp
 INCLUDES=-I/opt/X11/include
 LDFLAGS=-L/opt/X11/lib -lX11 -lm -fopenmp
-GCCVERSION=
+GCCVERSION=-12
 
 galsim: galsim.o graphics.o
 	gcc$(GCCVERSION) -o galsim galsim.o graphics.o $(LDFLAGS)

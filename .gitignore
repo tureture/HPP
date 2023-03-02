@@ -113,3 +113,7 @@ Lab9/Lab09_Pthreads_II/Task-6/._Makefile
 Lab9/Lab09_Pthreads_II/Task-7/._Makefile
 Lab9/Lab09_Pthreads_II/Task-7/._matmul.c
 Assignment4/galsim
+Assignment4/galsim
+Assignment4_OpenMP/result.gal
+.gitignore
+Assignment4/result.gal
