@@ -121,3 +121,49 @@ Jacbos OpenMp version of the code. Using schedule(dynamic) for the calc for loop
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  4.65s user 0.07s system 754% cpu 0.625 total
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.67s user 0.04s system 757% cpu 0.621 total
 ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.60s user 0.04s system 717% cpu 0.647 total
+
+------------------------------------------------------------------------------------------------------------
+i7-1165G7 GPU-acceleration (Is actually slower)
+time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0 4
+
+real    0m1.200s
+user    0m6.862s
+sys     0m0.086s
+
+time ./galsim 3000 input_data/ellipse_N_03000.gal 100 0.00001 0 40
+
+real    0m0.862s
+user    0m4.743s
+sys     0m0.122s
+
+time ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 4
+
+real    0m2.711s
+user    0m14.224s
+sys     0m0.057s
+
+time ./galsim 10000 input_data/ellipse_N_10000.gal 100 0.00001 0 40
+
+real    0m7.756s
+user    0m52.037s
+sys     0m0.196s
+
+time ./galsim 10000 input_data/ellipse_N_10000.gal 100 0.00001 0 40
+
+real    0m7.756s
+user    0m52.037s
+sys     0m0.196s
+
+Run WITHOUT GPU-acceleration (No real time difference)
+time ./galsim 10000 input_data/ellipse_N_10000.gal 100 0.00001 0 40
+
+real    0m7.389s
+user    0m53.468s
+sys     0m0.131s
+
+Run with GPU in second loop only
+time ./galsim 10000 input_data/ellipse_N_10000.gal 100 0.00001 0 40
+
+real    0m7.299s
+user    0m53.032s
+sys     0m0.140s
