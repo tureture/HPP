@@ -194,3 +194,50 @@ valgrind --tool=cachegrind ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00
 ==17207== LL refs:        1,879,753,229  (1,878,741,066 rd   + 1,012,163 wr)
 ==17207== LL misses:             10,313  (        5,270 rd   +     5,043 wr)
 ==17207== LL miss rate:             0.0% (          0.0%     +       0.1%  )
+
+
+--------------------------------------------------------------------------------------------
+Ture, comparison for different schedules: static, dynamic 
+
+Schedule dynamic:
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.68s user 0.03s system 768% cpu 0.614 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.70s user 0.03s system 768% cpu 0.616 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.68s user 0.03s system 769% cpu 0.613 total
+
+Schedule static:
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.20s user 0.03s system 618% cpu 0.684 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.21s user 0.03s system 593% cpu 0.715 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.19s user 0.03s system 614% cpu 0.687 total
+
+Schedule guided:
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.61s user 0.03s system 709% cpu 0.654 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.60s user 0.03s system 742% cpu 0.624 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.55s user 0.03s system 714% cpu 0.641 total
+
+Schedule dynamic for both for loops:
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.96s user 0.04s system 768% cpu 0.651 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.98s user 0.03s system 770% cpu 0.651 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.93s user 0.03s system 774% cpu 0.641 total
+
+Schedule dynamic with chunk size = 2:
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.62s user 0.04s system 760% cpu 0.612 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.59s user 0.04s system 746% cpu 0.620 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.62s user 0.04s system 759% cpu 0.612 total
+
+Schedule dynamic with chunk size = 4. Fastest one yet?
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.58s user 0.04s system 759% cpu 0.608 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.60s user 0.04s system 758% cpu 0.612 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.61s user 0.04s system 758% cpu 0.612 total
+
+Schedule dynamic with chunck size = 8:
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.59s user 0.03s system 760% cpu 0.607 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.60s user 0.04s system 755% cpu 0.614 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.60s user 0.04s system 747% cpu 0.621 total
+
+Schedule dynamic with chunck size = 25:
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.60s user 0.03s system 756% cpu 0.612 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.58s user 0.04s system 741% cpu 0.623 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.59s user 0.04s system 752% cpu 0.614 total
+
+Schedule dynamic with chunk size = 1000:
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  3.59s user 0.03s system 355% cpu 1.018 total
