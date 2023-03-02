@@ -167,3 +167,30 @@ time ./galsim 10000 input_data/ellipse_N_10000.gal 100 0.00001 0 40
 real    0m7.299s
 user    0m53.032s
 sys     0m0.140s
+
+--------------------------------------------------------------------------------------------
+Cachegrind result with dynamic first loop without GPU
+
+valgrind --tool=cachegrind ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 4
+==17207== Cachegrind, a cache and branch-prediction profiler
+==17207== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==17207== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==17207== Command: ./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 4
+==17207== 
+--17207-- warning: L3 cache found, using its data for the LL simulation.
+==17207== 
+==17207== I   refs:      57,584,446,041
+==17207== I1  misses:             2,108
+==17207== LLi misses:             1,915
+==17207== I1  miss rate:           0.00%
+==17207== LLi miss rate:           0.00%
+==17207== 
+==17207== D   refs:       7,522,530,098  (7,518,146,128 rd   + 4,383,970 wr)
+==17207== D1  misses:     1,879,751,121  (1,878,738,958 rd   + 1,012,163 wr)
+==17207== LLd misses:             8,398  (        3,355 rd   +     5,043 wr)
+==17207== D1  miss rate:           25.0% (         25.0%     +      23.1%  )
+==17207== LLd miss rate:            0.0% (          0.0%     +       0.1%  )
+==17207== 
+==17207== LL refs:        1,879,753,229  (1,878,741,066 rd   + 1,012,163 wr)
+==17207== LL misses:             10,313  (        5,270 rd   +     5,043 wr)
+==17207== LL miss rate:             0.0% (          0.0%     +       0.1%  )

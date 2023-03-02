@@ -128,7 +128,8 @@ int main(int argc, char *argv[])
     {
         for (int i = 0; i < nsteps; i++) // for all timesteps
         {
-            
+            //#pragma omp target data map(tofrom: particles[0:N])
+            //#pragma omp target teams distribute parallel for private(p1, p2, rij, acc_k, acc_x, acc_y, k)
             #pragma omp parallel for private(p1, p2, rij, acc_k, acc_x, acc_y, k) schedule(dynamic)
             for (int j = 0; j < N; j++) // for all particles update acc and vel
             {
@@ -158,6 +159,8 @@ int main(int argc, char *argv[])
 
 
             #pragma omp parallel for schedule(static)
+            //#pragma omp target data map(tofrom: particles[0:N])
+            //#pragma omp target teams distribute parallel for
             for (int j = 0; j < N; j++) // for all particles update pos
             {
                 // update position
