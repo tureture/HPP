@@ -2,7 +2,7 @@ For the OpenMP version of the code.
 Write the time measurments after different changes here:
 
 For easy copypaste access: 
-./galsim 3000 input_data/ellipse_N_03000.gal 100 0.0000 0 4
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 4
 
  ./a.out 5000 ../ref_output_data/ellipse_N_05000_after100steps.gal ../result.gal
 
@@ -112,3 +112,12 @@ jako4104@LAPTOP-3G5HMM2A:~/HPP/Github/HPP/Assignment4_OpenMP$ valgrind --leak-ch
 ==5278==         suppressed: 0 bytes in 0 blocks
 ==5278== 
 ==5278== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+--------------------------------------------------------------------------------------------------------
+
+March 2
+
+Jacbos OpenMp version of the code. Using schedule(dynamic) for the calc for loop and static for the update pos loop. M2
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 16  4.65s user 0.07s system 754% cpu 0.625 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.67s user 0.04s system 757% cpu 0.621 total
+./galsim 5000 input_data/ellipse_N_05000.gal 100 0.00001 0 8  4.60s user 0.04s system 717% cpu 0.647 total
