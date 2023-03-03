@@ -15,12 +15,6 @@
    of seconds and microseconds since the Epoch (1970-01-01 00:00:00
    +0000 (UTC)). The seconds and microseconds values are combined in a
    double number giving the number of seconds since the Epoch. */
-static double get_wall_seconds() {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  double seconds = tv.tv_sec + (double)tv.tv_usec / 1000000;
-  return seconds;
-}
 
 int main(int argc, const char** argv) {
   /* Do some computations and use get_wall_seconds() to measure the time of each part. */
