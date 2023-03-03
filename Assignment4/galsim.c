@@ -11,6 +11,13 @@ High Performance Computing
 By Ture Hassler & Jacob Malmenstedt
 */
 
+static double get_wall_seconds() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  double seconds = tv.tv_sec + (double)tv.tv_usec;
+  return seconds;
+}
+
 // Global variables
 int N;
 int nsteps;
@@ -92,6 +99,8 @@ void barrier_outer()
 
 void *calc_forces(void *arg)
 {
+
+
     /* Calc forces for one specific particle */
     struct Pthread_data *input = (struct Pthread_data *)arg;
 
@@ -101,6 +110,7 @@ void *calc_forces(void *arg)
     double acc_x = 0, acc_y = 0, acc_k; // acceleration
     double rij;                         // distance between particles
     struct Particle p1, p2;             // particles
+
 
     // printf("Thread %d: lb = %d, ub = %d \n", (int)pthread_self(), lb, ub);
     for (int i = 0; i < nsteps; i++)
@@ -147,6 +157,8 @@ void *calc_forces(void *arg)
 
 int main(int argc, char *argv[])
 {
+    int start = get_wall_seconds();
+    int before_par;
 
     // Parse command line arguments and initialize input variables
     if (argc != 7)
@@ -273,6 +285,8 @@ int main(int argc, char *argv[])
         int tasks_per_thread = N / NUM_THREADS;
         int tmp = 0;
 
+        before_par = get_wall_seconds();
+
         for (int j = 0; j < NUM_THREADS; j++) // create threads and distribute work evenly
         {
             if (j < remainder)
@@ -295,6 +309,8 @@ int main(int argc, char *argv[])
             pthread_join(threads[j], NULL);
         }
     }
+
+    int after_par = get_wall_seconds();
 
     // Write to binary file
     FILE *file_out;
@@ -320,6 +336,15 @@ int main(int argc, char *argv[])
 
     pthread_cond_destroy(&mysignal_outer);
     pthread_mutex_destroy(&lock_outer);
+
+    int end = get_wall_seconds();
+    printf("Total time: %i \n", end - start);
+    printf("Time spent in parallel region: %i \n", after_par - before_par);
+    printf("Other time: %i \n", end - start - (after_par - before_par));
+    printf("other time / par time: %f \n", (double)(end - start - (after_par - before_par)) / (double)(after_par - before_par));
+
+
+
 
     return 0;
 }
