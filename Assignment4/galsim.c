@@ -157,9 +157,6 @@ void *calc_forces(void *arg)
 
 int main(int argc, char *argv[])
 {
-    int start = get_wall_seconds();
-    int before_par;
-
     // Parse command line arguments and initialize input variables
     if (argc != 7)
     {
@@ -285,8 +282,6 @@ int main(int argc, char *argv[])
         int tasks_per_thread = N / NUM_THREADS;
         int tmp = 0;
 
-        before_par = get_wall_seconds();
-
         for (int j = 0; j < NUM_THREADS; j++) // create threads and distribute work evenly
         {
             if (j < remainder)
@@ -336,15 +331,6 @@ int main(int argc, char *argv[])
 
     pthread_cond_destroy(&mysignal_outer);
     pthread_mutex_destroy(&lock_outer);
-
-    int end = get_wall_seconds();
-    printf("Total time: %i \n", end - start);
-    printf("Time spent in parallel region: %i \n", after_par - before_par);
-    printf("Other time: %i \n", end - start - (after_par - before_par));
-    printf("other time / par time: %f \n", (double)(end - start - (after_par - before_par)) / (double)(after_par - before_par));
-
-
-
 
     return 0;
 }
