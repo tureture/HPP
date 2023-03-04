@@ -12,10 +12,21 @@ void do_some_work() {
 
 int main(int argc, char** argv) {
 
-#pragma omp parallel num_threads(3)
+  //read input number from argv
+  int n;
+  if(argc > 1) {
+    n = atoi(argv[1]);
+  } else {
+    n = 4;
+  }
+
+
+#pragma omp parallel num_threads(n)
   {
     do_some_work();
   }
 
   return 0;
 }
+
+// becomes slower after more than 8 threads
