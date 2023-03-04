@@ -1,26 +1,27 @@
 #include <stdio.h>
 #include <omp.h>
 
-const long int NA = 700000000;
-const long int NB = 100000000;
+const long int NA = 16000000000;
+const long int NB = 8000000000;
 
 long int thread_func_A() {
   long int i;
-  long int sum = 0;
+  long int sum = 1;
   for(i = 0; i < NA; i++)
-    sum += 7;
+    sum *= 7;
   return sum;
 }
 
 long int thread_func_B() {
   long int i;
-  long int sum = 0;
+  long int sum = 1;
   for(i = 0; i < NB; i++)
-    sum += 7;
+    sum *= 7;
   return sum;
 }
 
 int main() {
+  int start = omp_get_wtime();
   printf("This is the main() function starting.\n");
 
   long int result_A;
@@ -41,6 +42,10 @@ int main() {
   printf("result_B : %ld\n", result_B);
   long int totalSum = result_A + result_B;
   printf("totalSum : %ld\n", totalSum);
-
+  int end = omp_get_wtime();
+  printf("Time: %d\n", end - start);
   return 0;
 }
+
+// not exactly twice as fast, but pretty close with even workload. Compared to one thread doing all the work.
+// When one thread is finished it is not using the cpu while waiting for the other thread to finish.
