@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <omp.h>
 #include "sort_funcs.h"
 
 static double get_wall_seconds() {
@@ -31,6 +32,20 @@ int main(int argc, char* argv[]) {
     printf("Error: (N < 1).\n");
     return -1;
   }
+
+  omp_set_nested(1);
+  printf("OpenMP allow nested: %d \n", omp_get_nested());
+  #pragma omp parallel num_threads(2)
+  {
+    printf("Outer loop. Number of threads: %d \n", omp_get_num_threads());
+    #pragma omp parallel num_threads(4)
+    {
+      printf("Inner loop. Number of threads: %d \n", omp_get_num_threads());
+      printf("Inner loop. Current thread: %d \n", omp_get_thread_num());
+    }
+  }
+
+
   intType* list_to_sort = (intType*)malloc(N*sizeof(intType));
   // Fill list with random numbers
   int i;
@@ -62,3 +77,5 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
+
+// Not sure what to expect? Had some trouble here

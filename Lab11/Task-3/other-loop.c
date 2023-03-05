@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
   {
 
     int i;
+    # pragma omp parallel for
     for(i = 0; i < M; i++) {
       y *= 1.01;
       arr[i] = y * f(i);
@@ -36,3 +37,5 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+
+// No longer consisten due to race conditions and stuff
