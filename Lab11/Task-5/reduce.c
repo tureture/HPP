@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   for(repeat = 0; repeat < 400; repeat++) {
 
     globsum=0.0;
-#pragma omp parallel num_threads(nThreads) private(sum)
+#pragma omp parallel num_threads(nThreads) private(sum) reduction(+:globsum)
     {
       sum=0.0;
 
@@ -33,10 +33,9 @@ int main(int argc, char *argv[]) {
 	sum += A[i];
       }
 
-#pragma omp critical
-      {
+      
 	globsum+=sum;
-      }
+      
     }
 
   }
@@ -47,3 +46,5 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+
+// Takes the same time with critical and reduction for me. Reduction is easier to read though.

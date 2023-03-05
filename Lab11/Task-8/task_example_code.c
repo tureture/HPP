@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
         printf("Please give 1 arg: N\n");
         return -1;
     }
+
     int N = atoi(argv[1]);
     int M=100,i;
     double result[M];
@@ -26,8 +27,17 @@ int main(int argc, char *argv[]) {
     double time;
     
     time = omp_get_wtime();
-    for (int i=0;i<M;i++){
-        f(N,i,&result[i]);
+
+    #pragma omp parallel num_threads(4) 
+    {
+        #pragma omp single 
+        {
+            for (int i=0;i<M;i++)
+            {
+                #pragma omp task
+                f(N,i,&result[i]);
+            }
+        }
     }
     time = omp_get_wtime()-time;
  
@@ -38,3 +48,10 @@ int main(int argc, char *argv[]) {
     
     return 0;
 }
+
+// time before with n=500
+// ./a.out 500  4.45s user 0.02s system 99% cpu 4.472 total
+// time after with n=500
+// ./a.out 500  4.81s user 0.01s system 385% cpu 1.251 total
+
+// could not get mergesort to work. Please compare results 

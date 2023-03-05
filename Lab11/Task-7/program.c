@@ -71,3 +71,15 @@ int main(int argc, char *argv[]) {
   
   return 0;
 }
+
+// 1 thread
+// ./program 80000 80 1  2.17s user 0.01s system 99% cpu 2.183 total
+// ./program 800 8000 1  2.76s user 0.01s system 99% cpu 2.769 total
+// ./program 8 800000 1  2.66s user 0.01s system 99% cpu 2.681 total
+
+// 4 threads:
+// ./program 80000 80 4  2.36s user 0.01s system 359% cpu 0.658 total
+// ./program 800 8000 4  3.13s user 0.02s system 354% cpu 0.888 total
+// ./program 8 800000 4  3.00s user 0.02s system 352% cpu 0.857 total
+
+// Not sure what to expect? Seems pretty consistent? Not the results i expected.
