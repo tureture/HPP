@@ -19,7 +19,7 @@ typedef struct node{
 void add(node_t ** head, unsigned int day, double min, double max);
 void print_list(node_t * head);
 void delete(node_t ** head, int day);
-void free_memory(node_t * head);
+void free_memory(node_t ** head);
 
 int main() {
 
@@ -61,7 +61,7 @@ int main() {
         scanf(" %c", &command);
 
     }
-    free_memory(jan_ll);
+    free_memory(&jan_ll);
 
   return 0;
 }
@@ -172,9 +172,9 @@ void delete(node_t ** head, int day) {
     return;
 }
 
-// Free memory of linked list
-void free_memory(node_t * head) {
-    node_t * current = head;
+// Free memory of the entire linked list
+void free_memory(node_t ** head) {
+    node_t * current = *head;
     node_t * next;
 
     while (current != NULL) {
@@ -183,5 +183,5 @@ void free_memory(node_t * head) {
         current = next;
     }
 
-    head = NULL;
+    *head = NULL;
 }
