@@ -117,3 +117,5 @@ Assignment4/galsim
 Assignment4_OpenMP/result.gal
 .gitignore
 Assignment4/result.gal
+Project/out.txt
+.gitignore
