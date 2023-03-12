@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <string.h>
-
-// #include <omp.h>
+#include <omp.h>
 
 /*
 High Performance Programming
@@ -67,11 +66,9 @@ int main(int argc, char *argv[]){
         }
     }
 
+    
     solveBoard(board, n, N, unnasigned_n, unassigned_indicies);
-
-    //print_board(board, n, N);
-
-    write_board(board, N, filename_out);
+    // print_board(board, n, N);
 
     return 0;
 }
@@ -125,8 +122,12 @@ unsigned int solveBoard(unsigned int ** board_copy, unsigned int n, unsigned int
         }
     }
 
+    if (nr_remaining % 10 == 0){
+        printf("Remaining: %d \n", nr_remaining);
+    }
 
     if (nr_remaining == 0){
+        write_board(board, N, "output.txt");
         print_board(board, n, N);
         return 1;
     }
@@ -139,12 +140,24 @@ unsigned int solveBoard(unsigned int ** board_copy, unsigned int n, unsigned int
             if (validateBoard(coordinates, i, board, n, N)){
                 board[row][col] = i;
                 if (solveBoard(board, n, N, nr_remaining - 1, unassigned_indicies)){
+                    // free memory
+                    for (int i = 0; i < N; i++){
+                        free(board[i]);
+                    }
+                    free(board);
+                    
                     return 1;
                 }
                 board[row][col] = 0;
             }
         }
     }
+
+    // free memory
+    for (int i = 0; i < N; i++){
+        free(board[i]);
+    }
+    free(board);
 
     return 0;
 }
