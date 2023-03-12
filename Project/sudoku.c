@@ -66,8 +66,24 @@ int main(int argc, char *argv[]){
         }
     }
 
+    //OMP_NESTED = 1;
+    omp_set_max_active_levels(100);
+    printf("Omp get nested: %d \n", omp_get_max_active_levels());
+    printf("Omp get max threads: %d \n", omp_get_max_threads());
+    printf("Omp get num threads: %d \n", omp_get_num_threads());
+
+    omp_set_num_threads(4);
+
+    #pragma omp parallel
+    {
+        printf("Bonjour!\n");
+    }
+
+    #pragma omp parallel
+    {
+        solveBoard(board, n, N, unnasigned_n, unassigned_indicies);
+    }
     
-    solveBoard(board, n, N, unnasigned_n, unassigned_indicies);
     // print_board(board, n, N);
 
     return 0;
@@ -122,9 +138,13 @@ unsigned int solveBoard(unsigned int ** board_copy, unsigned int n, unsigned int
         }
     }
 
-    if (nr_remaining % 10 == 0){
+
+
+    /*
+        if (nr_remaining % 10 == 0){
         printf("Remaining: %d \n", nr_remaining);
     }
+    */
 
     if (nr_remaining == 0){
         write_board(board, N, "output.txt");
@@ -136,7 +156,9 @@ unsigned int solveBoard(unsigned int ** board_copy, unsigned int n, unsigned int
         row = coordinates / N;
         col = coordinates % N;
 
+        #pragma omp task 
         for (int i = 1; i <= N; i++){
+            // printf("Omp get num threads: %d \n", omp_get_num_threads());
             if (validateBoard(coordinates, i, board, n, N)){
                 board[row][col] = i;
                 if (solveBoard(board, n, N, nr_remaining - 1, unassigned_indicies)){
