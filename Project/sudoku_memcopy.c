@@ -71,6 +71,12 @@ int main(int argc, char *argv[]){
     }
 
     solveBoard(board, n, N, unnasigned_n, unassigned_indicies);
+
+    // Free memory
+    for (int i = 0; i < N; i++){
+        free(board[i]);
+    }
+    free(board);
      
     return 0;
 }
@@ -144,7 +150,14 @@ unsigned int solveBoard(unsigned int ** board_copy, unsigned int n, unsigned int
                 board[row][col] = 0;
             }
         }     
-    }   
+    } 
+
+    // Free memory
+    for (int i = 0; i < N; i++){
+        free(board[i]);
+    }
+    free(board); 
+    
     return 0;
 }
 
