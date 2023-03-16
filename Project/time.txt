@@ -1,7 +1,12 @@
 Different time measurments for changes in the sudoku solver code:
 
 March 15:
+
+Normal serial version
 ./sudoku_serial 4 input/input_4_2.txt out.txt  26.79s user 0.05s system 99% cpu 26.853 total
+
+After moving out the =0 outside the for loop.
+./sudoku_serial 4 input/input_4_2.txt out.txt  26.79s user 0.04s system 99% cpu 27.033 total
 
 Before properly clearing memory Memcopy variant runs out of memory and gets killed. Approached 8g or ram
 zsh: killed     ./sudoku_memcopy 4 input/input_4_2.txt out.txt
@@ -9,3 +14,8 @@ zsh: killed     ./sudoku_memcopy 4 input/input_4_2.txt out.txt
 
 After properly freeing memory for Memcopy. 6.3 times slower than serial version
 ./sudoku_memcopy 4 input/input_4_2.txt out.txt  168.70s user 0.41s system 99% cpu 2:49.46 total
+./sudoku_memcopy 4 input/input_4_2.txt out.txt  168.38s user 0.30s system 99% cpu 2:48.70 total
+
+Parallel version using if depth < cutoff check, a
+./sudoku 4 input/input_4_2.txt out.txt 4  340.58s user 1.32s system 700% cpu 48.838 total
+
