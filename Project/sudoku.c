@@ -15,6 +15,7 @@ unsigned int validateBoard(unsigned int coordinates, unsigned int num, unsigned 
 unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, unsigned int nr_remaining, unsigned int * unassigned_indicies, int depth);
 void print_board(unsigned int ** board, unsigned int n, unsigned int N);
 void write_board(unsigned int ** board, unsigned int N, char * output);
+unsigned int solveBoard_serial(unsigned int ** board, unsigned int n, unsigned int N, unsigned int nr_remaining, unsigned int * unassigned_indicies, int depth);
 
 int solution_found = 0;
 unsigned int ** final_board;
@@ -151,7 +152,7 @@ unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, u
     
     for (int i = 1; i <= N; i++){
         if (validateBoard(coordinates, i, board, n, N)){
-            if (depth > 1){
+            if (depth > 0){
                 // printf("Inside depth part \n");
                 // printf("Get thread number: %d \n", omp_get_thread_num());
                 //printf("Board adress (should be unique): %d \n", &board);
@@ -160,7 +161,7 @@ unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, u
                 board[row][col] = i;  
                 // printf("Depth: %d \n", depth);
                 // print_board(board, n, N);
-                if (solveBoard(board, n, N, nr_remaining - 1, unassigned_indicies, depth + 1)){
+                if (solveBoard_serial(board, n, N, nr_remaining - 1, unassigned_indicies, depth + 1)){
                     return 1;
                 }
                 board[row][col] = 0;
@@ -232,58 +233,13 @@ unsigned int solveBoard_serial(unsigned int ** board, unsigned int n, unsigned i
     
     for (int i = 1; i <= N; i++){
         if (validateBoard(coordinates, i, board, n, N)){
-            if (depth > 1){
-                // printf("Inside depth part \n");
-                // printf("Get thread number: %d \n", omp_get_thread_num());
-                //printf("Board adress (should be unique): %d \n", &board);
-                // printf("Depth: %d \n", depth);
-                // Solve serially
                 board[row][col] = i;  
-                // printf("Depth: %d \n", depth);
-                // print_board(board, n, N);
                 if (solveBoard(board, n, N, nr_remaining - 1, unassigned_indicies, depth + 1)){
                     return 1;
                 }
                 board[row][col] = 0;
-            }
-            else {
-                // Solve in parallel
-                // printf("Parallel part \n");
-                #pragma omp task firstprivate(row, col, i, board, n, N, nr_remaining, unassigned_indicies, depth)
-                {       
-                        threads_created++;
-                        // Allocate memory for board of size n^2 x n^2
-                        unsigned int ** board_copy = (unsigned int **)malloc(N * sizeof(unsigned int *));
-                        for (int i = 0; i < N; i++){
-                            board_copy[i] = (unsigned int *)malloc(N * sizeof(unsigned int));
-                        }
-
-                        // Copy board
-                        for (int i = 0; i < N; i++){
-                            for (int j = 0; j < N; j++){
-                                board_copy[i][j] = board[i][j];
-                            }
-                        }
-
-                        board_copy[row][col] = i;  
-                        solveBoard(board_copy, n, N, nr_remaining - 1, unassigned_indicies, depth + 1);
-                        // board[row][col] = 0;
-                        
-                        // Free memory before returning
-                        for (int i = 0; i < N; i++){
-                            free(board_copy[i]);
-                        }
-                        free(board_copy);
-
-
-                } // end omp task
-            } 
-        }
-    }    
-    #pragma omp taskwait   
-    
-
-
+        } 
+    }
     return 0;
 }
 
