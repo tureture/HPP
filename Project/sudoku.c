@@ -21,7 +21,7 @@ int solution_found = 0;
 int main(int argc, char *argv[]){
 
     // Parse command line arguments and initialize input variables
-    if (argc != 4){
+    if (argc != 5){
         printf("Usage: ./sudoku n input_filename output_filename \n");
         return 1;
     }
@@ -29,8 +29,10 @@ int main(int argc, char *argv[]){
     int n = atoi(argv[1]);
     char *filename_in= argv[2];
     // char *filename_out = argv[3];
+    int NUM_THREADS = atoi(argv[3]);
 
     int N = n * n; // Size of board
+
 
     // Allocate memory for board of size n^2 x n^2
     unsigned int ** board = (unsigned int **)malloc(N * sizeof(unsigned int *));
@@ -140,11 +142,14 @@ unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, u
     
     for (int i = 1; i <= N; i++){
         if (validateBoard(coordinates, i, board, n, N)){
-            if (depth > 2){
-                printf("Inside depth part \n");
+            if (depth > 0){
+                // printf("Inside depth part \n");
+                // printf("Get thread number: %d \n", omp_get_thread_num());
+                //printf("Board adress (should be unique): %d \n", &board);
+                // printf("Depth: %d \n", depth);
                 // Solve serially
                 board[row][col] = i;  
-                printf("Depth: %d \n", depth);
+                // printf("Depth: %d \n", depth);
                 // print_board(board, n, N);
                 if (solveBoard(board, n, N, nr_remaining - 1, unassigned_indicies, depth + 1)){
                     return 1;
@@ -153,7 +158,7 @@ unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, u
             }
             else {
                 // Solve in parallel
-                printf("Parallel part \n");
+                // printf("Parallel part \n");
                 #pragma omp task firstprivate(row, col, i, board, n, N, nr_remaining, unassigned_indicies, depth)
                 {
                         // Allocate memory for board of size n^2 x n^2
@@ -169,11 +174,9 @@ unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, u
                             }
                         }
 
-                        board[row][col] = i;  
-                        if (solveBoard(board_copy, n, N, nr_remaining - 1, unassigned_indicies, depth + 1)){
-                            // print_board(board_copy, n, N);
-                        }
-                        board[row][col] = 0;
+                        board_copy[row][col] = i;  
+                        solveBoard(board_copy, n, N, nr_remaining - 1, unassigned_indicies, depth + 1);
+                        // board[row][col] = 0;
                         
                         // Free memory before returning
                         for (int i = 0; i < N; i++){
