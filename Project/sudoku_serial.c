@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <string.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
+
 
 /*
 High Performance Programming
