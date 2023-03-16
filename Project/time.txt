@@ -19,3 +19,11 @@ After properly freeing memory for Memcopy. 6.3 times slower than serial version
 Parallel version using if depth < cutoff check, a
 ./sudoku 4 input/input_4_2.txt out.txt 4  340.58s user 1.32s system 700% cpu 48.838 total
 
+After using depth priorituy 
+./sudoku 4 input/input_4_2.txt out.txt 4  291.34s user 0.96s system 725% cpu 40.312 total
+./sudoku 4 input/input_4_2.txt out.txt 4  291.80s user 0.72s system 752% cpu 38.869 total
+
+After using random shuffling and serial version, compared to serial and previous openmp version
+./sudoku_openmp_test 4 input/input_4_2.txt out.txt 2  38.42s user 0.05s system 197% cpu 19.489 total
+./sudoku_serial 4 input/input_4_2.txt out.txt  27.26s user 0.04s system 99% cpu 27.301 total
+./sudoku 4 input/input_4_2.txt out.txt 2  294.77s user 0.64s system 762% cpu 38.718 total
