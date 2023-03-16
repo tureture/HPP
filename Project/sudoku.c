@@ -24,7 +24,7 @@ int main(int argc, char *argv[]){
 
     // Parse command line arguments and initialize input variables
     if (argc != 5){
-        printf("Usage: ./sudoku n input_filename output_filename \n");
+        printf("Usage: ./sudoku n input_filename output_filename nr_threads \n");
         return 1;
     }
 
@@ -75,7 +75,9 @@ int main(int argc, char *argv[]){
     // Print openmp stuff
     printf("Number of threads: %d \n", NUM_THREADS);
     printf("max threads: %d \n", omp_get_max_threads());
+    omp_set_nested()
     printf("set nested: %d \n", omp_get_nested());
+
     // printf()
 
     #pragma omp parallel
@@ -107,7 +109,7 @@ unsigned int validateBoard(unsigned int coordinates, unsigned int num, unsigned 
     }
 
     // Check column
-    for (int i = 0; i < n; i++){
+    for (int i = 0; i < N; i++){
         if (board[i][col] == num){
             return 0;
         }
