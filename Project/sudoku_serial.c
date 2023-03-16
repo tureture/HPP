@@ -88,7 +88,7 @@ unsigned int validateBoard(unsigned int coordinates, unsigned int num, unsigned 
     }
 
     // Check column
-    for (int i = 0; i < n; i++){
+    for (int i = 0; i < N; i++){
         if (board[i][col] == num){
             return 0;
         }

@@ -34,6 +34,7 @@ int main(int argc, char *argv[]){
     // char *filename_out = argv[3];
     int NUM_THREADS = atoi(argv[4]);
 
+    printf("NR_THREADS: %d", NUM_THREADS);
     int N = n * n; // Size of board
 
     // Allocate memory for NUM_THREADS boards 
@@ -73,12 +74,7 @@ int main(int argc, char *argv[]){
         }
     } 
 
-    // allocate memory for unassigned indicies
-    int ** unnasigned_indicies = malloc(NUM_THREADS * sizeof(int *));
-    for (int i = 0; i < NUM_THREADS; i++){
-        unnasigned_indicies[i] = malloc(unnasigned_n * sizeof(int));
-    }
-
+    unsigned int * unassigned_indicies = (unsigned int *)malloc((unnasigned_n + 1) * sizeof(unsigned int));
     unnasigned_n = 0;
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
@@ -91,29 +87,16 @@ int main(int argc, char *argv[]){
         }
     }
 
-    // Shuffle unnasigned indicies list
-    for (int i = 1; i < NUM_THREADS; i++){
-        shuffle(unnasigned_indicies[i], unnasigned_n);
-    }
-
-
-    // Print openmp stuff
-    printf("Number of threads: %d \n", NUM_THREADS);
-    printf("max threads: %d \n", omp_get_max_threads());
-
-    
-    // Solve board
-    #pragma omp parallel 
-    {
-        #pragma omp taskloop num_tasks(NUM_THREADS) firstprivate(boards, n, N, unnasigned_n, unnasigned_indicies)
-        for (int i=0; i < NUM_THREADS; i++){
-        solveBoard_serial(boards[i], n, N, unnasigned_n, unnasigned_indicies[i], 0);   
+    printf("Omp cancellation enabled: %d \n", omp_get_cancellation());
+    #pragma omp parallel default(none) num_threads(4) shared(board, n, N, unnasigned_n, unassigned_indicies)
+    {   
+        #pragma omp single
+        {
+            solveBoard(board, n, N, unnasigned_n, unassigned_indicies);
         }
-
     }
     
-    printf("Done \n");
-
+     
     return 0;
 }
 
@@ -160,16 +143,9 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    int row, col;
-
-    if (nr_remaining == 0){
-        #pragma omp critical 
-        {
-            printf("Solution found \n");
-            write_board(board, N, "output.txt");
-            print_board(board, n, N);
-            solution_found = 1;
-        }
+    if (nr_remaining == 0) {
+        write_board(board, N, "output.txt");
+        print_board(board, n, N);
         return 1;
     }
     else {
