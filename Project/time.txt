@@ -27,3 +27,14 @@ After using random shuffling and serial version, compared to serial and previous
 ./sudoku_openmp_test 4 input/input_4_2.txt out.txt 2  38.42s user 0.05s system 197% cpu 19.489 total
 ./sudoku_serial 4 input/input_4_2.txt out.txt  27.26s user 0.04s system 99% cpu 27.301 total
 ./sudoku 4 input/input_4_2.txt out.txt 2  294.77s user 0.64s system 762% cpu 38.718 total
+
+
+After adding check entier board function
+Time spent reading file and shuffling: 0.000137 
+Time spent solving: 0.638797 
+Total time: 0.638934 
+./sudoku 4 input/input_4_3.txt out.txt 4  2.57s user 0.01s system 400% cpu 0.645 total
+
+Time comparison shuffling vs computations
+Time spent reading file and shuffling: 0.000149 
+Time spent solving: 0.186238

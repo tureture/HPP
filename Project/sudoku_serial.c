@@ -16,15 +16,10 @@ unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, u
 void print_board(unsigned int ** board, unsigned int n, unsigned int N);
 void write_board(unsigned int ** board, unsigned int N, char * output);
 int validate_entire_board(int ** board, int n, int N);
+static double get_wall_seconds();
 
-static double get_wall_seconds() {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  double seconds = tv.tv_sec + (double)tv.tv_usec / 1000000;
-  return seconds;
-}
 
-int solution_found = 0;
+
 
 int main(int argc, char *argv[]){
 
@@ -32,13 +27,12 @@ int main(int argc, char *argv[]){
 
     // Parse command line arguments and initialize input variables
     if (argc != 4){
-        printf("Usage: ./sudoku n input_filename output_filename \n");
+        printf("Usage: ./sudoku n input_filename \n");
         return 1;
     }
-
     int n = atoi(argv[1]);
     char *filename_in= argv[2];
-    // char *filename_out = argv[3];
+
 
     int N = n * n; // Size of board
 
@@ -83,6 +77,14 @@ int main(int argc, char *argv[]){
     double end = get_wall_seconds();
     printf("Time spent solving: %f \n", end - start);
 
+    // free memory
+    for (int i = 0; i < N; i++){
+        free(board[i]);
+    }
+    free(board);
+    free(unassigned_indicies);
+    fclose(file);
+
      
     return 0;
 }
@@ -119,27 +121,35 @@ unsigned int validateBoard(unsigned int coordinates, unsigned int num, unsigned 
 
     return 1;
 }
-    
+
+// Recusively solves the board using iterative backtracking
+// Overwrites / changes the values of the board variable
 unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, unsigned int nr_remaining, unsigned int * unassigned_indicies){
     
     unsigned int row, col;
 
+    // Check if done
     if (nr_remaining == 0){
         write_board(board, N, "output.txt");
-        // print_board(board, n, N);
-        if(validate_entire_board(board, n, N)){
 
+        // Extra validation check. Only performed once so minimal impact on performance
+        if(validate_entire_board(board, n, N)){
+            
         }
         else{
+            // Should never reach here...
             printf("Invalid solution found\n");
         }  
         return 1;
     }
     else {
+
+        // Gets coordinates from unnasigned_indicies array
         unsigned int coordinates = unassigned_indicies[nr_remaining -1];
         row = coordinates / N;
         col = coordinates % N;
         
+        // Checks each possible value and tries to solve the board for that value iteratively
         for (int i = 1; i <= N; i++){
             if (validateBoard(coordinates, i, board, n, N)){
                 board[row][col] = i;  
@@ -153,6 +163,8 @@ unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, u
     return 0;
 }
 
+// Prints the board to the terminal
+// Mainly used for debugging
 void print_board(unsigned int ** board, unsigned int n, unsigned int N){
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
@@ -172,6 +184,7 @@ void print_board(unsigned int ** board, unsigned int n, unsigned int N){
     printf("\n");
 }
 
+// Writes the board to a file
 void write_board(unsigned int ** board, unsigned int N, char * output){
     FILE *file = fopen(output, "w");
     if (file == NULL){
@@ -188,6 +201,8 @@ void write_board(unsigned int ** board, unsigned int N, char * output){
 }
 
 
+// Validates entire board
+// Returns 1 if valid, 0 if not
 int validate_entire_board(int ** board, int n, int N){
     int tmp;
     for (int i = 0; i < N; i++){
@@ -204,4 +219,12 @@ int validate_entire_board(int ** board, int n, int N){
         }
     }
     return 1;
+}
+
+// Copied from Lab Exercises
+static double get_wall_seconds() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  double seconds = tv.tv_sec + (double)tv.tv_usec / 1000000;
+  return seconds;
 }
