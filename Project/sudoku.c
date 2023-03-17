@@ -21,7 +21,7 @@ static double get_wall_seconds() {
 int validateBoard(int coordinates,  int num,  int ** board,  int n,  int N); 
 void print_board( int ** board,  int n,  int N);
 void write_board( int ** board,  int N, char * output);
-int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth);
+int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth, int * values_to_try);
 void shuffle(int *array, size_t n);
 int validate_entire_board(int ** board, int n, int N);
 
@@ -107,7 +107,18 @@ int main(int argc, char *argv[]){
         shuffle(unnasigned_indicies[i], unnasigned_n);
     }
 
+    int ** values_to_try_array = malloc(num_threads * sizeof(int *));
+    for(int i = 0; i < num_threads; i++){
+        values_to_try_array[i] = malloc(N * sizeof(int));
+    }
 
+    // shuffle values to try
+    for (int i = 0; i < num_threads; i++){
+        for (int j = 0; j < N; j++){
+            values_to_try_array[i][j] = j + 1;
+        }
+        shuffle(values_to_try_array[i], N);
+    }
     // double middle = get_wall_seconds();
     
 
@@ -116,8 +127,9 @@ int main(int argc, char *argv[]){
     #pragma omp single
     {
         for (int i=0; i < num_threads; i++){
-            #pragma omp task
-            solveBoard_serial(boards[i], n, N, unnasigned_n, unnasigned_indicies[i], 0);   
+            #pragma omp task firstprivate(i, boards, n, N, unnasigned_n, unnasigned_indicies)
+            solveBoard_serial(boards[i], n, N, unnasigned_n, unnasigned_indicies[i], 0, values_to_try_array[i]);
+
         }
     }
 
@@ -170,23 +182,44 @@ int main(int argc, char *argv[]){
 }
     
 
- int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth){
+ int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth, int * values_to_try){
     
     // Check if solution has been found in another thread
     // No flush needed, done automatically by critical section when setting solution_found
+    
+    
     if (solution_found){
-        return 1;
+    return 1;
     }
+    
 
     int row, col;
+
+    /*
+        #pragma omp critical
+    {
+        // print first 10 unnasigned indicies
+        printf("THread number: %d \n", omp_get_thread_num());
+        printf("Unnasigned indicies: ");
+        for (int i = 0; i < 10; i++){
+            printf("%d ", unassigned_indicies[i]);
+        }
+        printf("\n");
+    }
+    
+    */
+
+    
+
 
     // Check if solution found
     if (nr_remaining == 0){
         #pragma omp critical 
         {
-            // printf("Solution found \n");
+            printf("Solution found \n");
+            printf("By thread nr: %d \n", omp_get_thread_num());
             write_board(board, N, "output.txt");
-            // print_board(board, n, N);
+            print_board(board, n, N);
             if (validate_entire_board(board, n, N)){
                 // printf("Board is valid \n");
             }
@@ -195,17 +228,21 @@ int main(int argc, char *argv[]){
             }
             solution_found = 1;
         }
+
         return 1;
     }
     else { // solve normally
-         int coordinates = unassigned_indicies[nr_remaining -1];
+        int coordinates = unassigned_indicies[nr_remaining -1];
         row = coordinates / N;
         col = coordinates % N;
+
         
-        for (int i = 1; i <= N; i++){
-            if (validateBoard(coordinates, i, board, n, N)){
-                board[row][col] = i;  
-                if (solveBoard_serial(board, n, N, nr_remaining - 1, unassigned_indicies, depth + 1)){
+        
+        for (int i = 0; i < N; i++){
+            int num = values_to_try[i];
+            if (validateBoard(coordinates, num, board, n, N)){
+                board[row][col] = num;  
+                if (solveBoard_serial(board, n, N, nr_remaining - 1, unassigned_indicies, depth + 1, values_to_try)){
                     return 1;
                 }
                 board[row][col] = 0;
