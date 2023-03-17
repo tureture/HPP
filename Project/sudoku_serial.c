@@ -77,6 +77,14 @@ int main(int argc, char *argv[]){
     double end = get_wall_seconds();
     printf("Time spent solving: %f \n", end - start);
 
+    // free memory
+    for (int i = 0; i < N; i++){
+        free(board[i]);
+    }
+    free(board);
+    free(unassigned_indicies);
+    fclose(file);
+
      
     return 0;
 }

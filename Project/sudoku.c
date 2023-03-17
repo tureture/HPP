@@ -130,6 +130,11 @@ int main(int argc, char *argv[]){
         free(boards[i]);
     }
     free(boards);
+    // free unnasigned indicies
+    for (int i = 0; i < num_threads; i++){
+        free(unnasigned_indicies[i]);
+    }
+    free(unnasigned_indicies);
 
 
     return 0;
