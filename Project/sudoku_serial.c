@@ -17,9 +17,18 @@ void print_board(unsigned int ** board, unsigned int n, unsigned int N);
 void write_board(unsigned int ** board, unsigned int N, char * output);
 int validate_entire_board(int ** board, int n, int N);
 
+static double get_wall_seconds() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  double seconds = tv.tv_sec + (double)tv.tv_usec / 1000000;
+  return seconds;
+}
+
 int solution_found = 0;
 
 int main(int argc, char *argv[]){
+
+    double start = get_wall_seconds();
 
     // Parse command line arguments and initialize input variables
     if (argc != 4){
@@ -70,6 +79,10 @@ int main(int argc, char *argv[]){
     }
 
     solveBoard(board, n, N, unnasigned_n, unassigned_indicies);
+
+    double end = get_wall_seconds();
+    printf("Time spent solving: %f \n", end - start);
+
      
     return 0;
 }
