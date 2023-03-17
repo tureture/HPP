@@ -31,7 +31,7 @@ int solution_found = 0;
 
 int main(int argc, char *argv[]){
 
-    // double start = get_wall_seconds();
+    double start = get_wall_seconds();
 
     // Parse command line arguments and initialize input variables
     if (argc != 5){
@@ -42,19 +42,19 @@ int main(int argc, char *argv[]){
     int n = atoi(argv[1]);
     char *filename_in= argv[2];
     // char *filename_out = argv[3];
-    int NUM_THREADS = atoi(argv[4]);
+    int num_threads = atoi(argv[4]);
 
     int N = n * n; // Size of board
 
-    // Allocate memory for NUM_THREADS boards 
-    int *** boards = malloc(NUM_THREADS * sizeof(int **));
-    for (int i = 0; i < NUM_THREADS; i++){
+    // 
+    // Allocate memory for num_threads boards 
+    int *** boards = malloc(num_threads * sizeof(int **));
+    for (int i = 0; i < num_threads; i++){
         boards[i] = malloc(N * sizeof(int *));
         for (int j = 0; j < N; j++){
             boards[i][j] = malloc(N * sizeof(int));
         }
     }
-
 
     // Read data from file and initialize board from input file
     FILE *file = fopen(filename_in, "r");
@@ -71,18 +71,19 @@ int main(int argc, char *argv[]){
         for (int j = 0; j < N; j++){
             int val;
             fscanf(file, "%d", &val);
-            if (boards[0][i][j] == 0){
-                for(int k = 0; k < NUM_THREADS; k++){
-                    boards[k][i][j] = val;
-                }
+            for(int k = 0; k < num_threads; k++){
+                boards[k][i][j] = val;
+            }
+            if (val == 0){
                 unnasigned_n++;
             }
         }
     } 
 
+
     // allocate memory for unassigned indicies
-    int ** unnasigned_indicies = malloc(NUM_THREADS * sizeof(int *));
-    for (int i = 0; i < NUM_THREADS; i++){
+    int ** unnasigned_indicies = malloc((num_threads + 1) * sizeof(int *));
+    for (int i = 0; i < num_threads; i++){
         unnasigned_indicies[i] = malloc(unnasigned_n * sizeof(int));
     }
 
@@ -90,8 +91,10 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
             if (boards[0][i][j] == 0){
-                for (int k = 0; k < NUM_THREADS; k++){
-                    unnasigned_indicies[k][unnasigned_n] = i * N + j;
+                for (int k = 0; k < num_threads; k++){
+                    if (boards[k][i][j] == 0){
+                        unnasigned_indicies[k][unnasigned_n] = i * N + j;
+                    }
                 }       
                 unnasigned_n++;
             }
@@ -100,28 +103,26 @@ int main(int argc, char *argv[]){
 
 
     // Shuffle unnasigned indicies list
-    for (int i = 1; i < NUM_THREADS; i++){
+    for (int i = 1; i < num_threads; i++){
         shuffle(unnasigned_indicies[i], unnasigned_n);
     }
 
-    printf("\n");
 
     // double middle = get_wall_seconds();
     
-    // Solve board
-    
-    #pragma omp parallel
+
+
+    #pragma omp parallel num_threads(num_threads)
+    #pragma omp single
     {
-        #pragma omp single
-        {   
-           for (int i=0; i < NUM_THREADS; i++){
-                #pragma omp task firstprivate(boards, n, N, unnasigned_n, unnasigned_indicies)
-                solveBoard_serial(boards[i], n, N, unnasigned_n, unnasigned_indicies[i], 0);   
-            }
+        for (int i=0; i < num_threads; i++){
+            #pragma omp task
+            solveBoard_serial(boards[i], n, N, unnasigned_n, unnasigned_indicies[i], 0);   
         }
     }
 
-    // double end = get_wall_seconds();
+    double end = get_wall_seconds();
+    printf("Time spent solving: %f \n", end - start);
 
     /*
     printf("Time spent reading file and shuffling: %f \n", middle - start);
