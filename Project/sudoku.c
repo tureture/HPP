@@ -112,11 +112,15 @@ int main(int argc, char *argv[]){
         values_to_try_array[i] = malloc(N * sizeof(int));
     }
 
-    // shuffle values to try
+    // fill values to try
     for (int i = 0; i < num_threads; i++){
         for (int j = 0; j < N; j++){
             values_to_try_array[i][j] = j + 1;
         }
+    }
+
+    // shuffle values to try
+    for (int i = 1; i < num_threads; i++){
         shuffle(values_to_try_array[i], N);
     }
     // double middle = get_wall_seconds();
@@ -127,7 +131,7 @@ int main(int argc, char *argv[]){
     #pragma omp single
     {
         for (int i=0; i < num_threads; i++){
-            #pragma omp task firstprivate(i, boards, n, N, unnasigned_n, unnasigned_indicies)
+            #pragma omp task firstprivate(i, boards, n, N, unnasigned_n, unnasigned_indicies, values_to_try_array) shared(solution_found)
             solveBoard_serial(boards[i], n, N, unnasigned_n, unnasigned_indicies[i], 0, values_to_try_array[i]);
 
         }
@@ -186,14 +190,25 @@ int main(int argc, char *argv[]){
     
     // Check if solution has been found in another thread
     // No flush needed, done automatically by critical section when setting solution_found
-    
-    
     if (solution_found){
     return 1;
     }
     
 
     int row, col;
+
+    /*
+     #pragma omp critical 
+    {
+        printf("THread number: %d \n", omp_get_thread_num());
+        printf("values to try: ");
+        for (int i = 0; i < 10; i++){
+            printf("%d ", values_to_try[i]);
+        }
+    }
+    
+    */
+
 
     /*
         #pragma omp critical
