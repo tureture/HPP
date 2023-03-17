@@ -8,14 +8,10 @@
 High Performance Programming
 Project: Sudoku Solver
 by Ture Hassler
+
+Parallel version using random starting points for each parallel thread
 */
 
-static double get_wall_seconds() {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  double seconds = tv.tv_sec + (double)tv.tv_usec / 1000000;
-  return seconds;
-}
 
 // function headers
 int validateBoard(int coordinates,  int num,  int ** board,  int n,  int N); 
@@ -24,6 +20,7 @@ void write_board( int ** board,  int N, char * output);
 int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth);
 void shuffle(int *array, size_t n);
 int validate_entire_board(int ** board, int n, int N);
+static double get_wall_seconds();
 
 int solution_found = 0;
 
@@ -34,20 +31,19 @@ int main(int argc, char *argv[]){
     double start = get_wall_seconds();
 
     // Parse command line arguments and initialize input variables
-    if (argc != 5){
-        printf("Usage: ./sudoku n input_filename output_filename nr_threads \n");
+    if (argc != 4){
+        printf("Usage: ./sudoku n input_filename nr_threads \n");
         return 1;
     }
 
     int n = atoi(argv[1]);
     char *filename_in= argv[2];
-    // char *filename_out = argv[3];
-    int num_threads = atoi(argv[4]);
+    int num_threads = atoi(argv[3]);
 
     int N = n * n; // Size of board
 
-    // 
     // Allocate memory for num_threads boards 
+    // Each thread gets its own board to work on
     int *** boards = malloc(num_threads * sizeof(int **));
     for (int i = 0; i < num_threads; i++){
         boards[i] = malloc(N * sizeof(int *));
@@ -87,6 +83,7 @@ int main(int argc, char *argv[]){
         unnasigned_indicies[i] = malloc(unnasigned_n * sizeof(int));
     }
 
+    // Fill unassigned indicies array
     unnasigned_n = 0;
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
@@ -108,10 +105,7 @@ int main(int argc, char *argv[]){
     }
 
 
-    // double middle = get_wall_seconds();
-    
-
-
+    // Launch each threads task
     #pragma omp parallel num_threads(num_threads)
     #pragma omp single
     {
@@ -124,18 +118,11 @@ int main(int argc, char *argv[]){
     double end = get_wall_seconds();
     printf("Time spent solving: %f \n", end - start);
 
-    /*
-    printf("Time spent reading file and shuffling: %f \n", middle - start);
-    printf("Time spent solving: %f \n", end - middle);
-    printf("Total time: %f \n", end - start);
-
-    */
-
-
 
     return 0;
 }
 
+// Validates potential move on board
  int validateBoard( int coordinates,  int num, int ** board,  int n,  int N){
     // Get row and column from single coordinate number (row * N + col)
      int row = coordinates / N;
@@ -169,11 +156,12 @@ int main(int argc, char *argv[]){
     return 1;
 }
     
-
+// Solves board recursively
+// The serial version replaces the values of the board, instead of creating a copy.
  int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth){
     
     // Check if solution has been found in another thread
-    // No flush needed, done automatically by critical section when setting solution_found
+    // No flush needed, should be done automatically by critical section when setting solution_found
     if (solution_found){
         return 1;
     }
@@ -184,24 +172,29 @@ int main(int argc, char *argv[]){
     if (nr_remaining == 0){
         #pragma omp critical 
         {
-            // printf("Solution found \n");
             write_board(board, N, "output.txt");
-            // print_board(board, n, N);
+
+            // Extra validation check
+            // Only performed once so should not affect performance
             if (validate_entire_board(board, n, N)){
-                // printf("Board is valid \n");
             }
             else{
+                // Should never reach this
                 printf("Board is not valid \n");
             }
             solution_found = 1;
         }
         return 1;
     }
-    else { // solve normally
-         int coordinates = unassigned_indicies[nr_remaining -1];
+    else { 
+        // Solve board
+
+        //Get coordinates from unassigned indicies
+        int coordinates = unassigned_indicies[nr_remaining -1];
         row = coordinates / N;
         col = coordinates % N;
         
+        // Solves board recursively for each value 
         for (int i = 1; i <= N; i++){
             if (validateBoard(coordinates, i, board, n, N)){
                 board[row][col] = i;  
@@ -215,6 +208,8 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
+// Prints board to terminal
+// Used for debugging
 void print_board(int ** board, int n, int N){
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
@@ -234,6 +229,7 @@ void print_board(int ** board, int n, int N){
     printf("\n");
 }
 
+// Writes the given board to a file
 void write_board(int ** board, int N, char * output){
     FILE *file = fopen(output, "w");
     if (file == NULL){
@@ -249,6 +245,8 @@ void write_board(int ** board, int N, char * output){
     }
 }
 
+// Shuffles the given array
+// Called the fisher yates shuffle
 void shuffle(int *array, size_t n)
 {
     if (n > 1) 
@@ -292,4 +290,12 @@ int validate_entire_board(int ** board, int n, int N){
     }
 
     return 1;
+}
+
+// Borrowed from Lab Exercies 
+static double get_wall_seconds() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  double seconds = tv.tv_sec + (double)tv.tv_usec / 1000000;
+  return seconds;
 }

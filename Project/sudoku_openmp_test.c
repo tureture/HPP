@@ -12,7 +12,6 @@ by Ture Hassler
 
 // function headers
 int validateBoard(int coordinates,  int num,  int ** board,  int n,  int N); 
-int solveBoard( int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth);
 void print_board( int ** board,  int n,  int N);
 void write_board( int ** board,  int N, char * output);
 int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth);
@@ -95,7 +94,7 @@ int main(int argc, char *argv[]){
             solveBoard(board, n, N, unnasigned_n, unassigned_indicies);
         }
     }
-    
+
      
     return 0;
 }
@@ -200,6 +199,7 @@ void write_board(int ** board, int N, char * output){
     }
 }
 
+// list shuffle function borrowed from stackoverflow 
 void shuffle(int *array, size_t n)
 {
     if (n > 1) 
