@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <time.h>
 #include <string.h>
 #include <omp.h>
 
@@ -14,7 +15,7 @@ Parallel version using random starting points for each parallel thread
 
 
 // function headers
-int validateBoard(int coordinates,  int num,  int ** board,  int n,  int N); 
+int validateBoard(int row, int col,  int num,  int ** board,  int n,  int N); 
 void print_board( int ** board,  int n,  int N);
 void write_board( int ** board,  int N, char * output);
 int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth);
@@ -57,7 +58,8 @@ int main(int argc, char *argv[]){
     if (file == NULL){
         printf("Error opening file\n");
         return 1;
-    }   
+    }  
+
 
 
     // Loops through data twice, first to count number of unassigned values and fill upp the board
@@ -98,6 +100,8 @@ int main(int argc, char *argv[]){
         }
     }
 
+    fclose(file);
+
 
     // Shuffle unnasigned indicies list
     for (int i = 1; i < num_threads; i++){
@@ -118,15 +122,22 @@ int main(int argc, char *argv[]){
     double end = get_wall_seconds();
     printf("Time spent solving: %f \n", end - start);
 
+    // free memory
+    for (int i = 0; i < num_threads; i++){
+        for (int j = 0; j < N; j++){
+            free(boards[i][j]);
+        }
+        free(boards[i]);
+    }
+    free(boards);
+
 
     return 0;
 }
 
 // Validates potential move on board
- int validateBoard( int coordinates,  int num, int ** board,  int n,  int N){
-    // Get row and column from single coordinate number (row * N + col)
-     int row = coordinates / N;
-     int col = coordinates % N;
+ int validateBoard( int row, int col,  int num, int ** board,  int n,  int N){
+    // Get box coordinates
      int box_x = (row / n) * n;
      int box_y = (col / n) * n;
 
@@ -196,7 +207,7 @@ int main(int argc, char *argv[]){
         
         // Solves board recursively for each value 
         for (int i = 1; i <= N; i++){
-            if (validateBoard(coordinates, i, board, n, N)){
+            if (validateBoard(row, col, i, board, n, N)){
                 board[row][col] = i;  
                 if (solveBoard_serial(board, n, N, nr_remaining - 1, unassigned_indicies, depth + 1)){
                     return 1;
@@ -249,6 +260,7 @@ void write_board(int ** board, int N, char * output){
 // Called the fisher yates shuffle
 void shuffle(int *array, size_t n)
 {
+
     if (n > 1) 
     {
         size_t i;
@@ -270,7 +282,7 @@ int validate_entire_board(int ** board, int n, int N){
             if (board[i][j] != 0){
                 tmp = board[i][j]; // weird looking tradeoff I made for a nicer validateBoard function
                 board[i][j] = 0;
-                if (!validateBoard(i * N + j, tmp, board, n, N)){
+                if (!validateBoard(i, j, tmp, board, n, N)){
                     printf("Coordinate %d %d is not valid \n", i, j);
                     return 0;
                 }
