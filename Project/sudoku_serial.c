@@ -15,6 +15,7 @@ unsigned int validateBoard(unsigned int coordinates, unsigned int num, unsigned 
 unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, unsigned int nr_remaining, unsigned int * unassigned_indicies);
 void print_board(unsigned int ** board, unsigned int n, unsigned int N);
 void write_board(unsigned int ** board, unsigned int N, char * output);
+int validate_entire_board(int ** board, int n, int N);
 
 int solution_found = 0;
 
@@ -112,7 +113,13 @@ unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, u
 
     if (nr_remaining == 0){
         write_board(board, N, "output.txt");
-        print_board(board, n, N);
+        // print_board(board, n, N);
+        if(validate_entire_board(board, n, N)){
+
+        }
+        else{
+            printf("Invalid solution found\n");
+        }  
         return 1;
     }
     else {
@@ -165,4 +172,23 @@ void write_board(unsigned int ** board, unsigned int N, char * output){
         }
         fprintf(file, "\n");
     }
+}
+
+
+int validate_entire_board(int ** board, int n, int N){
+    int tmp;
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < N; j++){
+            if (board[i][j] != 0){
+                tmp = board[i][j]; // weird looking tradeoff I made for a nicer validateBoard function
+                board[i][j] = 0;
+                if (!validateBoard(i * N + j, tmp, board, n, N)){
+                    printf("Coordinate %d %d is not valid \n", i, j);
+                    return 0;
+                }
+                board[i][j] = tmp;
+            }
+        }
+    }
+    return 1;
 }

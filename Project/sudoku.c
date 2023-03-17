@@ -10,18 +10,28 @@ Project: Sudoku Solver
 by Ture Hassler
 */
 
+static double get_wall_seconds() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  double seconds = tv.tv_sec + (double)tv.tv_usec / 1000000;
+  return seconds;
+}
+
 // function headers
-unsigned int validateBoard(unsigned int coordinates, unsigned int num, unsigned int ** board, unsigned int n, unsigned int N);
-unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, unsigned int nr_remaining, unsigned int * unassigned_indicies, int depth);
-void print_board(unsigned int ** board, unsigned int n, unsigned int N);
-void write_board(unsigned int ** board, unsigned int N, char * output);
-unsigned int solveBoard_serial(unsigned int ** board, unsigned int n, unsigned int N, unsigned int nr_remaining, unsigned int * unassigned_indicies, int depth);
+int validateBoard(int coordinates,  int num,  int ** board,  int n,  int N); 
+void print_board( int ** board,  int n,  int N);
+void write_board( int ** board,  int N, char * output);
+int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth);
+void shuffle(int *array, size_t n);
+int validate_entire_board(int ** board, int n, int N);
 
 int solution_found = 0;
-unsigned int ** final_board;
-int threads_created = 0;
+
+
 
 int main(int argc, char *argv[]){
+
+    // double start = get_wall_seconds();
 
     // Parse command line arguments and initialize input variables
     if (argc != 5){
@@ -32,75 +42,105 @@ int main(int argc, char *argv[]){
     int n = atoi(argv[1]);
     char *filename_in= argv[2];
     // char *filename_out = argv[3];
-    int NUM_THREADS = atoi(argv[3]);
+    int NUM_THREADS = atoi(argv[4]);
 
     int N = n * n; // Size of board
 
-
-    // Allocate memory for board of size n^2 x n^2
-    unsigned int ** board = (unsigned int **)malloc(N * sizeof(unsigned int *));
-    for (int i = 0; i < N; i++){
-        board[i] = (unsigned int *)malloc(N * sizeof(unsigned int));
+    // Allocate memory for NUM_THREADS boards 
+    int *** boards = malloc(NUM_THREADS * sizeof(int **));
+    for (int i = 0; i < NUM_THREADS; i++){
+        boards[i] = malloc(N * sizeof(int *));
+        for (int j = 0; j < N; j++){
+            boards[i][j] = malloc(N * sizeof(int));
+        }
     }
+
 
     // Read data from file and initialize board from input file
     FILE *file = fopen(filename_in, "r");
     if (file == NULL){
         printf("Error opening file\n");
         return 1;
-    }
+    }   
+
 
     // Loops through data twice, first to count number of unassigned values and fill upp the board
     // Then to assign them to an array
     int unnasigned_n = 0;
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
-            fscanf(file, "%d", &board[i][j]);
-            if (board[i][j] == 0){
+            int val;
+            fscanf(file, "%d", &val);
+            if (boards[0][i][j] == 0){
+                for(int k = 0; k < NUM_THREADS; k++){
+                    boards[k][i][j] = val;
+                }
                 unnasigned_n++;
             }
         }
     } 
 
-    unsigned int * unassigned_indicies = (unsigned int *)malloc((unnasigned_n + 1) * sizeof(unsigned int));
+    // allocate memory for unassigned indicies
+    int ** unnasigned_indicies = malloc(NUM_THREADS * sizeof(int *));
+    for (int i = 0; i < NUM_THREADS; i++){
+        unnasigned_indicies[i] = malloc(unnasigned_n * sizeof(int));
+    }
+
     unnasigned_n = 0;
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
-            if (board[i][j] == 0){
-                unassigned_indicies[unnasigned_n] = i * N + j;
+            if (boards[0][i][j] == 0){
+                for (int k = 0; k < NUM_THREADS; k++){
+                    unnasigned_indicies[k][unnasigned_n] = i * N + j;
+                }       
                 unnasigned_n++;
             }
         }
     }
 
-    // Print openmp stuff
-    printf("Number of threads: %d \n", NUM_THREADS);
-    printf("max threads: %d \n", omp_get_max_threads());
-    omp_set_nested()
-    printf("set nested: %d \n", omp_get_nested());
 
-    // printf()
+    // Shuffle unnasigned indicies list
+    for (int i = 1; i < NUM_THREADS; i++){
+        shuffle(unnasigned_indicies[i], unnasigned_n);
+    }
 
+    printf("\n");
+
+    // double middle = get_wall_seconds();
+    
+    // Solve board
+    
     #pragma omp parallel
     {
         #pragma omp single
-        {
-            solveBoard(board, n, N, unnasigned_n, unassigned_indicies, 0);
+        {   
+           for (int i=0; i < NUM_THREADS; i++){
+                #pragma omp task firstprivate(boards, n, N, unnasigned_n, unnasigned_indicies)
+                solveBoard_serial(boards[i], n, N, unnasigned_n, unnasigned_indicies[i], 0);   
+            }
         }
     }
-    // solveBoard(board, n, N, unnasigned_n, unassigned_indicies);
-    
-    printf("Threads created: %d \n", threads_created);
+
+    // double end = get_wall_seconds();
+
+    /*
+    printf("Time spent reading file and shuffling: %f \n", middle - start);
+    printf("Time spent solving: %f \n", end - middle);
+    printf("Total time: %f \n", end - start);
+
+    */
+
+
 
     return 0;
 }
 
-unsigned int validateBoard(unsigned int coordinates, unsigned int num, unsigned int ** board, unsigned int n, unsigned int N){
+ int validateBoard( int coordinates,  int num, int ** board,  int n,  int N){
     // Get row and column from single coordinate number (row * N + col)
-    unsigned int row = coordinates / N;
-    unsigned int col = coordinates % N;
-    unsigned int box_x = (row / n) * n;
-    unsigned int box_y = (col / n) * n;
+     int row = coordinates / N;
+     int col = coordinates % N;
+     int box_x = (row / n) * n;
+     int box_y = (col / n) * n;
 
     // Check row
     for (int i = 0; i < N; i++){
@@ -128,124 +168,53 @@ unsigned int validateBoard(unsigned int coordinates, unsigned int num, unsigned 
     return 1;
 }
     
-unsigned int solveBoard(unsigned int ** board, unsigned int n, unsigned int N, unsigned int nr_remaining, unsigned int * unassigned_indicies, int depth){
-    
-    unsigned int row, col;
 
+ int solveBoard_serial(int ** board,  int n,  int N,  int nr_remaining,  int * unassigned_indicies, int depth){
+    
+    // Check if solution has been found in another thread
+    // No flush needed, done automatically by critical section when setting solution_found
     if (solution_found){
-        printf("Solution found in another thread \n");
         return 1;
     }
 
+    int row, col;
+
+    // Check if solution found
     if (nr_remaining == 0){
-            #pragma omp critical 
-            {
-                printf("Solution found \n");
-                    write_board(board, N, "output.txt");
-                    print_board(board, n, N);
-                solution_found = 1;
+        #pragma omp critical 
+        {
+            // printf("Solution found \n");
+            write_board(board, N, "output.txt");
+            // print_board(board, n, N);
+            if (validate_entire_board(board, n, N)){
+                // printf("Board is valid \n");
             }
+            else{
+                printf("Board is not valid \n");
+            }
+            solution_found = 1;
+        }
         return 1;
     }
-
-    unsigned int coordinates = unassigned_indicies[nr_remaining -1];
-    row = coordinates / N;
-    col = coordinates % N;
-    
-    for (int i = 1; i <= N; i++){
-        if (validateBoard(coordinates, i, board, n, N)){
-            if (depth > 0){
-                // printf("Inside depth part \n");
-                // printf("Get thread number: %d \n", omp_get_thread_num());
-                //printf("Board adress (should be unique): %d \n", &board);
-                // printf("Depth: %d \n", depth);
-                // Solve serially
+    else { // solve normally
+         int coordinates = unassigned_indicies[nr_remaining -1];
+        row = coordinates / N;
+        col = coordinates % N;
+        
+        for (int i = 1; i <= N; i++){
+            if (validateBoard(coordinates, i, board, n, N)){
                 board[row][col] = i;  
-                // printf("Depth: %d \n", depth);
-                // print_board(board, n, N);
                 if (solveBoard_serial(board, n, N, nr_remaining - 1, unassigned_indicies, depth + 1)){
                     return 1;
                 }
                 board[row][col] = 0;
             }
-            else {
-                // Solve in parallel
-                // printf("Parallel part \n");
-                #pragma omp task firstprivate(row, col, i, board, n, N, nr_remaining, unassigned_indicies, depth) priority(depth)
-                {       
-                        threads_created++;
-                        // Allocate memory for board of size n^2 x n^2
-                        unsigned int ** board_copy = (unsigned int **)malloc(N * sizeof(unsigned int *));
-                        for (int i = 0; i < N; i++){
-                            board_copy[i] = (unsigned int *)malloc(N * sizeof(unsigned int));
-                        }
-
-                        // Copy board
-                        for (int i = 0; i < N; i++){
-                            for (int j = 0; j < N; j++){
-                                board_copy[i][j] = board[i][j];
-                            }
-                        }
-
-                        board_copy[row][col] = i;  
-                        solveBoard(board_copy, n, N, nr_remaining - 1, unassigned_indicies, depth + 1);
-                        // board[row][col] = 0;
-                        
-                        // Free memory before returning
-                        for (int i = 0; i < N; i++){
-                            free(board_copy[i]);
-                        }
-                        free(board_copy);
-
-
-                } // end omp task
-            } 
-        }
-    }    
-    #pragma omp taskwait   
-    
-
-
+        }     
+    }   
     return 0;
 }
 
-unsigned int solveBoard_serial(unsigned int ** board, unsigned int n, unsigned int N, unsigned int nr_remaining, unsigned int * unassigned_indicies, int depth){
-    
-    unsigned int row, col;
-
-    if (solution_found){
-        printf("Solution found in another thread \n");
-        return 1;
-    }
-
-    if (nr_remaining == 0){
-            #pragma omp critical 
-            {
-                printf("Solution found \n");
-                    write_board(board, N, "output.txt");
-                    print_board(board, n, N);
-                solution_found = 1;
-            }
-        return 1;
-    }
-
-    unsigned int coordinates = unassigned_indicies[nr_remaining -1];
-    row = coordinates / N;
-    col = coordinates % N;
-    
-    for (int i = 1; i <= N; i++){
-        if (validateBoard(coordinates, i, board, n, N)){
-                board[row][col] = i;  
-                if (solveBoard(board, n, N, nr_remaining - 1, unassigned_indicies, depth + 1)){
-                    return 1;
-                }
-                board[row][col] = 0;
-        } 
-    }
-    return 0;
-}
-
-void print_board(unsigned int ** board, unsigned int n, unsigned int N){
+void print_board(int ** board, int n, int N){
     for (int i = 0; i < N; i++){
         for (int j = 0; j < N; j++){
             if (j % n == 0 && j != 0){
@@ -264,7 +233,7 @@ void print_board(unsigned int ** board, unsigned int n, unsigned int N){
     printf("\n");
 }
 
-void write_board(unsigned int ** board, unsigned int N, char * output){
+void write_board(int ** board, int N, char * output){
     FILE *file = fopen(output, "w");
     if (file == NULL){
         printf("Error opening file\n");
@@ -277,4 +246,49 @@ void write_board(unsigned int ** board, unsigned int N, char * output){
         }
         fprintf(file, "\n");
     }
+}
+
+void shuffle(int *array, size_t n)
+{
+    if (n > 1) 
+    {
+        size_t i;
+        for (i = 0; i < n - 1; i++) 
+        {
+          size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+          int t = array[j];
+          array[j] = array[i];
+          array[i] = t;
+        }
+    }
+}
+
+int validate_entire_board(int ** board, int n, int N){
+    int tmp;
+    // Check for invalid values
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < N; j++){
+            if (board[i][j] != 0){
+                tmp = board[i][j]; // weird looking tradeoff I made for a nicer validateBoard function
+                board[i][j] = 0;
+                if (!validateBoard(i * N + j, tmp, board, n, N)){
+                    printf("Coordinate %d %d is not valid \n", i, j);
+                    return 0;
+                }
+                board[i][j] = tmp;
+            }
+        }
+    }
+
+    // Check for zeros
+    for(int i = 0; i < N; i++){
+        for (int j = 0; j < N; j++){
+            if (board[i][j] == 0){
+                printf("Board is not valid \n");
+                return 0;
+            }
+        }
+    }
+
+    return 1;
 }
