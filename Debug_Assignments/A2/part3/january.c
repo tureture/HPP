@@ -153,7 +153,6 @@ void delete(node_t ** head, int day) {
     // case when its the first element of the list 
     if (current -> day == day){
         *head = current -> next; // Set head to second element
-        return;
     }
     else {
         // loop through list
